@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+package administration;
+
+option java_package = "ar.edu.itba.pod.grpc.administration";
+// option java_outer_classname = "administrationServiceModel";
+option java_multiple_files = true;
+
+
+service AdministrationService {
+  rpc AddRoom(google.protobuf.Empty) returns (google.protobuf.UInt32Value);
+  rpc AddDoctor(DoctorInfo) returns (google.protobuf.Empty);
+  rpc SetDoctor(AvailabilityInfo) returns (google.protobuf.Empty);
+  rpc CheckDoctor(google.protobuf.StringValue) returns (AvailabilityInfo);
+
+}
+
+message DoctorInfo {
+  string name = 1;
+  uint32 max_level = 2;
+}
+
+message AvailabilityInfo {
+  DoctorInfo doctor = 1;
+  string availability = 2;
+}

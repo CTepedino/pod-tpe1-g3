@@ -29,4 +29,8 @@ public class RoomRepository {
         }
         return null;
     }
+
+    public void freeRoom(int roomNumber){
+        getRoom(roomNumber).free();
+    }
 }

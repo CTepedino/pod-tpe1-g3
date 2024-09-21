@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+package waitingRoom;
+
+option java_package = "ar.edu.itba.pod.grpc.waitingRoom";
+// option java_outer_classname = "waitingRoomServiceModel";
+option java_multiple_files = true;
+
+
+service WaitingRoomService {
+  rpc AddPatient(PatientInfo) returns (google.protobuf.Empty);
+  rpc UpdateLevel(PatientInfo) returns (google.protobuf.Empty);
+  rpc CheckPatient(google.protobuf.StringValue) returns (google.protobuf.UInt32Value);
+}
+
+message PatientInfo {
+  string name = 1;
+  uint32 level = 2;
+}
+
