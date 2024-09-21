@@ -20,4 +20,13 @@ public class RoomRepository {
     public Room getRoom(int roomNumber){
         return rooms.get(roomNumber-1);
     }
+
+    public Room getAvailableRoom(){
+        for (Room room : rooms){
+            if (room.isAvailable()){
+                return room;
+            }
+        }
+        return null;
+    }
 }
