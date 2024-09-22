@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+import "messages.proto";
+
+package query;
+
+option java_package = "ar.edu.itba.pod.grpc.query";
+// option java_outer_classname = "queryServiceModel";
+option java_multiple_files = true;
+
+service QueryService {
+  rpc QueryRooms(google.protobuf.Empty) returns (RoomsInfo);
+  rpc QueryWaitingRoom(google.protobuf.Empty) returns (WaitingInfo);
+  rpc QueryCares(google.protobuf.UInt32Value) returns (CaresInfo);
+}
+
+message RoomInfo {
+  uint32 room = 1;
+  RoomStatus status = 2;
+  PatientInfo patient = 3;
+  DoctorInfo doctor = 4;
+}
+
+message RoomsInfo {
+  repeated RoomInfo rooms = 1;
+}
+
+message WaitingInfo {
+  repeated PatientInfo patients = 1;
+}
+
+message CaredInfo {
+  uint32 room = 1;
+  PatientInfo patient = 2;
+  DoctorInfo doctor = 3;
+}
+
+message CaresInfo {
+  repeated CaredInfo cares = 1;
+}

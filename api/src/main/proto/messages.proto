@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+message PatientInfo {
+  string name = 1;
+  uint32 level = 2;
+}
+
+enum DoctorStatus {
+  DOCTOR_UNSPECIFIED = 0;
+  DOCTOR_AVAILABLE = 1;
+  DOCTOR_UNAVAILABLE = 2;
+  DOCTOR_ATTENDING = 3;
+}
+
+message DoctorInfo {
+  string name = 1;
+  uint32 max_level = 2;
+}
+
+enum RoomStatus {
+  ROOM_UNSPECIFIED = 0;
+  ROOM_FREE = 1;
+  ROOM_OCCUPIED = 2;
+}

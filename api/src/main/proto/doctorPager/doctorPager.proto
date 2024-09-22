@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+import "messages.proto";
+
+package doctorPager;
+
+option java_package = "ar.edu.itba.pod.grpc.doctorPager";
+// option java_outer_classname = "doctorPagerServiceModel";
+option java_multiple_files = true;
+
+
+service DoctorPagerService {
+  rpc Register(google.protobuf.StringValue) returns (stream DoctorEvent);
+  rpc Unregister(google.protobuf.StringValue) returns (google.protobuf.Empty);
+}
+
+enum Event {
+  EVENT_UNSPECIFIED = 0;
+  EVENT_REGISTER = 1;
+  EVENT_DISPONIBILITY = 2;
+  EVENT_START_CARE = 3;
+  EVENT_END_CARE = 4;
+  EVENT_UNREGISTER = 5;
+}
+
+message DoctorEvent {
+    DoctorInfo doctor = 1;
+    Event event = 2;
+    uint32 room = 3;
+    PatientInfo patient = 4;
+    DoctorStatus status = 5;
+}
+

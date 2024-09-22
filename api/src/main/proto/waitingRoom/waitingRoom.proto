@@ -3,6 +3,7 @@ syntax = "proto3";
 
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
+import "messages.proto";
 
 package waitingRoom;
 
@@ -17,8 +18,4 @@ service WaitingRoomService {
   rpc CheckPatient(google.protobuf.StringValue) returns (google.protobuf.UInt32Value);
 }
 
-message PatientInfo {
-  string name = 1;
-  uint32 level = 2;
-}
 

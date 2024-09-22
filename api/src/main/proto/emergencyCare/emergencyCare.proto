@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+import "messages.proto";
+
+package emergencyCare;
+
+option java_package = "ar.edu.itba.pod.grpc.emergencyCare";
+// option java_outer_classname = "emergencyCareServiceModel";
+option java_multiple_files = true;
+
+
+service EmergencyRoomService {
+  rpc CarePatient(google.protobuf.UInt32Value) returns (CareResponse);
+  rpc CareAllPatients(google.protobuf.Empty) returns (CareResponseList);
+  rpc DischargePatient(DischargeRequest) returns (CareResponse);
+}
+
+enum RoomStatus {
+  ROOM_STATUS_UNSPECIFIED = 0;
+  ROOM_STATUS_STILL_FREE = 1;
+  ROOM_STATUS_WAS_OCCUPIED = 2;
+  ROOM_STATUS_OK = 3;
+}
+
+message DischargeRequest {
+  uint32 room = 1;
+  string doctor_name = 2;
+  string patient_name = 3;
+}
+
+message CareResponse {
+  RoomStatus status = 1;
+  uint32 room = 2;
+  PatientInfo patient = 3;
+  DoctorInfo doctor = 4;
+}
+
+message CareResponseList {
+  repeated CareResponse info = 1; //TODO: ver si para este caso es mejor repeated o stream
+}
