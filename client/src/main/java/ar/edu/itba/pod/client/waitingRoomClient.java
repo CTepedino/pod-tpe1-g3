@@ -3,7 +3,6 @@ package ar.edu.itba.pod.client;
 import ar.edu.itba.pod.grpc.waitingRoom.CheckPatientResponse;
 import ar.edu.itba.pod.grpc.waitingRoom.WaitingRoomServiceGrpc;
 import com.google.protobuf.StringValue;
-import com.google.protobuf.UInt32Value;
 import emergencyRoom.Messages;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -98,7 +97,7 @@ public class waitingRoomClient {
 
         try {
             CheckPatientResponse response = blockingStub.checkPatient(StringValue.of(patientName));
-            System.out.printf("Patient %s (%d) is in the waiting room with %d patients ahead\n", patientName, response.getPatient().getLevel(), response.getWaitTime()); //TODO: Agregar el nivel del doctor. (Lo deberia retornar el server)
+            System.out.printf("Patient %s (%d) is in the waiting room with %d patients ahead\n", patientName, response.getPatient().getLevel(), response.getWaitTime());
         } catch (StatusRuntimeException e){
             System.out.println(e.getMessage());
         }
