@@ -1,6 +1,10 @@
 package ar.edu.itba.pod.server;
 
+import ar.edu.itba.pod.server.repository.DoctorRepository;
+import ar.edu.itba.pod.server.repository.RoomRepository;
+import ar.edu.itba.pod.server.service.AdministrationService;
 import io.grpc.ServerBuilder;
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +18,11 @@ public class Server {
 
         int port = 50051;
 
+        DoctorRepository dr = new DoctorRepository();
+        RoomRepository rr = new RoomRepository();
+
         io.grpc.Server server = ServerBuilder.forPort(port)
+                .addService(new AdministrationService(dr, rr))
                 .build();
         server.start();
 
