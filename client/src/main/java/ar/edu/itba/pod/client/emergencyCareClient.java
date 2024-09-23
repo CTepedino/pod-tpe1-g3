@@ -50,7 +50,7 @@ public class emergencyCareClient {
         int room = Integer.parseInt(roomString);
 
         try {
-            CareResponse response = blockingStub.carePatient(UInt32Value.of(room));
+            CarePatientResponse response = blockingStub.carePatient(UInt32Value.of(room));
             System.out.printf("Patient %s (%d) and Doctor %s (%d) are now in Room #%d\n", response.getPatient().getName(), response.getPatient().getLevel(), response.getDoctor().getName(), response.getDoctor().getMaxLevel(), room);
         } catch (StatusRuntimeException e){
             System.out.println(e.getMessage());
@@ -59,12 +59,12 @@ public class emergencyCareClient {
 
     private static void careAllPatients(){
         try {
-            CareResponseList responseList = blockingStub.careAllPatients(com.google.protobuf.Empty.newBuilder().build());
-            for(CareResponse response : responseList.getInfoList()){
-                if(response.getStatus() == RoomStatus.ROOM_STATUS_OK){
+            CareAllPatientsResponse responseList = blockingStub.careAllPatients(com.google.protobuf.Empty.newBuilder().build());
+            for(CarePatientResponse response : responseList.getRoomsList()){
+                if(response.getStatus() == RoomUpdateStatus.ROOM_STATUS_OK){
                     System.out.printf("Patient %s (%d) and Doctor %s (%d) are now in Room #%d\n", response.getPatient().getName(), response.getPatient().getLevel(), response.getDoctor().getName(), response.getDoctor().getMaxLevel(), response.getRoom());
                 } else {
-                    System.out.printf("Room #%d remains %s\n", response.getRoom(), response.getStatus() == RoomStatus.ROOM_STATUS_STILL_FREE ? "Free" : "Occupied");
+                    System.out.printf("Room #%d remains %s\n", response.getRoom(), response.getStatus() == RoomUpdateStatus.ROOM_STATUS_STILL_FREE ? "Free" : "Occupied");
                 }
             }
         } catch (StatusRuntimeException e){
@@ -90,10 +90,10 @@ public class emergencyCareClient {
         }
 
         int room = Integer.parseInt(roomString);
-        DischargeRequest request = DischargeRequest.newBuilder().setRoom(room).setDoctorName(doctorName).setPatientName(patientName).build();
+        DischargePatientRequest request = DischargePatientRequest.newBuilder().setRoom(room).setDoctorName(doctorName).setPatientName(patientName).build();
 
         try {
-            CareResponse response = blockingStub.dischargePatient(request);
+            CarePatientResponse response = blockingStub.dischargePatient(request);
             System.out.printf("Patient %s (%d) has been discharged from Doctor %s (%d) and the Room #%d is now Free", response.getPatient().getName(), response.getPatient().getLevel(), response.getDoctor().getName(), response.getDoctor().getMaxLevel(), room);
         } catch (StatusRuntimeException e){
             System.out.println(e.getMessage());
