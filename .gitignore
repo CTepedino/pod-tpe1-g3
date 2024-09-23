@@ -1,3 +1,6 @@
 /.idea/*
 /.idea/.gitignore
 /.idea/compiler.xml
+/api/target/*
+/client/target/*
+/server/target/*
