@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package emergencyRoom;
+
 message PatientInfo {
   string name = 1;
   uint32 level = 2;

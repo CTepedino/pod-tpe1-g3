@@ -3,9 +3,9 @@ syntax = "proto3";
 
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
-import "messages.proto";
+import "emergencyRoom/messages.proto";
 
-package administration;
+package emergencyRoom.administration;
 
 option java_package = "ar.edu.itba.pod.grpc.administration";
 option java_multiple_files = true;
