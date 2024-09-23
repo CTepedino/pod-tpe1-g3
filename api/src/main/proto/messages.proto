@@ -6,19 +6,13 @@ message PatientInfo {
 }
 
 enum DoctorStatus {
-  DOCTOR_UNSPECIFIED = 0;
-  DOCTOR_AVAILABLE = 1;
-  DOCTOR_UNAVAILABLE = 2;
-  DOCTOR_ATTENDING = 3;
+  DOCTOR_STATUS_UNSPECIFIED = 0;
+  DOCTOR_STATUS_UNAVAILABLE = 1;
+  DOCTOR_STATUS_AVAILABLE = 2;
+  DOCTOR_STATUS_ATTENDING = 3;
 }
 
 message DoctorInfo {
   string name = 1;
   uint32 max_level = 2;
-}
-
-enum RoomStatus {
-  ROOM_UNSPECIFIED = 0;
-  ROOM_FREE = 1;
-  ROOM_OCCUPIED = 2;
 }

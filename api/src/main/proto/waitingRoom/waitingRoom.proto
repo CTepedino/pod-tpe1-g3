@@ -8,14 +8,17 @@ import "messages.proto";
 package waitingRoom;
 
 option java_package = "ar.edu.itba.pod.grpc.waitingRoom";
-// option java_outer_classname = "waitingRoomServiceModel";
 option java_multiple_files = true;
-
 
 service WaitingRoomService {
   rpc AddPatient(PatientInfo) returns (google.protobuf.Empty);
   rpc UpdateLevel(PatientInfo) returns (google.protobuf.Empty);
-  rpc CheckPatient(google.protobuf.StringValue) returns (google.protobuf.UInt32Value);
+  rpc CheckPatient(google.protobuf.StringValue) returns (CheckPatientResponse);
+}
+
+message CheckPatientResponse {
+  PatientInfo patient = 1;
+  uint32 wait_time = 2;
 }
 
 
