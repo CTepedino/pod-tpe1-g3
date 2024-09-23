@@ -1,6 +1,8 @@
 package ar.edu.itba.pod.server.repository;
 
 import ar.edu.itba.pod.server.model.Doctor;
+import emergencyRoom.Messages.DoctorStatus;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +25,12 @@ public class DoctorRepository {
 
     public Doctor getDoctor(String name){
         return doctors.get(name);
+    }
+
+    public Doctor setDoctorStatus(String name, DoctorStatus status){
+        Doctor doctor = doctors.get(name);
+        doctor.setStatus(status);
+        return doctor;
     }
 
     public Doctor getAvailableDoctor(int level){
