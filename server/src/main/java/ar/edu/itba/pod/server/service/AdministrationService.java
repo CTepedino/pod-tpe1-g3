@@ -10,7 +10,6 @@ import com.google.protobuf.Empty;
 import com.google.protobuf.StringValue;
 import com.google.protobuf.UInt32Value;
 import emergencyRoom.Messages;
-import emergencyRoom.Messages.DoctorStatus;
 import io.grpc.stub.StreamObserver;
 
 public class AdministrationService extends AdministrationServiceGrpc.AdministrationServiceImplBase {
