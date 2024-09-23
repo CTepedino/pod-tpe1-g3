@@ -1,10 +1,12 @@
 package ar.edu.itba.pod.server.model;
 
+import emergencyRoom.Messages.DoctorStatus;
+
 import java.util.Objects;
 
 public class Doctor {
 
-    private boolean available;
+    private DoctorStatus status;
     private final String name;
     private final int maxLevel;
 
@@ -15,19 +17,15 @@ public class Doctor {
             throw new IllegalArgumentException("maxLevel must be between 1 and 5");
         }
         this.maxLevel = maxLevel;
-        available = false;
+        this.status = DoctorStatus.DOCTOR_STATUS_UNAVAILABLE;
     }
 
-    public void makeAvailable(){
-        available = true;
+    public void setStatus(DoctorStatus status){
+        this.status = status;
     }
 
-    public void makeUnavailable(){
-        available = false;
-    }
-
-    public boolean isAvailable(){
-        return available;
+    public DoctorStatus getStatus(){
+        return status;
     }
 
     public String getName(){
