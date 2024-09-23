@@ -3,15 +3,22 @@ package ar.edu.itba.pod.server;
 import ar.edu.itba.pod.server.repository.DoctorRepository;
 import ar.edu.itba.pod.server.repository.RoomRepository;
 import ar.edu.itba.pod.server.service.AdministrationService;
+import io.grpc.BindableService;
 import io.grpc.ServerBuilder;
+import io.grpc.ServerInterceptors;
+import io.grpc.ServerServiceDefinition;
 import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.function.Function;
 
 public class Server {
-    private static Logger logger = LoggerFactory.getLogger(Server.class);
+    private static final Logger logger = LoggerFactory.getLogger(Server.class);
+
+    private static final Function<BindableService, ServerServiceDefinition> exceptionHandler =
+            service -> ServerInterceptors.intercept(service, new GlobalExceptionHandlerInterceptor());
 
     public static void main(String[] args) throws InterruptedException, IOException {
         logger.info("Emergency Room Server Starting ...");
@@ -22,7 +29,7 @@ public class Server {
         RoomRepository rr = new RoomRepository();
 
         io.grpc.Server server = ServerBuilder.forPort(port)
-                .addService(new AdministrationService(dr, rr))
+                .addService(exceptionHandler.apply(new AdministrationService(dr, rr)))
                 .build();
         server.start();
 

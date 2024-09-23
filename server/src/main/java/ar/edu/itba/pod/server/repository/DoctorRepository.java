@@ -1,30 +1,35 @@
 package ar.edu.itba.pod.server.repository;
 
+import ar.edu.itba.pod.server.exception.DoctorAlreadyExistsException;
+import ar.edu.itba.pod.server.exception.DoctorNotFoundException;
 import ar.edu.itba.pod.server.model.Doctor;
 import emergencyRoom.Messages.DoctorStatus;
 
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DoctorRepository {
 
     private final Map<String, Doctor> doctors;
 
     public DoctorRepository(){
-        doctors = new HashMap<>();
+        doctors = new ConcurrentHashMap<>();
     }
 
-    public void addDoctor(String name, int maxLevel) throws IllegalArgumentException{
-
+    public void addDoctor(String name, int maxLevel){
         Doctor doctor = new Doctor(name, maxLevel);
         if(doctors.putIfAbsent(name, doctor) == null) {
-            throw new IllegalArgumentException("Doctor " + name + " already exists");
+            throw new DoctorAlreadyExistsException(name);
         }
     }
 
     public Doctor getDoctor(String name){
-        return doctors.get(name);
+        Doctor doctor = doctors.get(name);
+        if (doctor == null){
+            throw new DoctorNotFoundException(name);
+        }
+        return doctor;
     }
 
     public Doctor setDoctorStatus(String name, DoctorStatus status){
@@ -33,7 +38,7 @@ public class DoctorRepository {
         return doctor;
     }
 
-    public Doctor getAvailableDoctor(int level){
+  /*  public Doctor getAvailableDoctor(int level){
         Doctor candidate = null;
 
         for (Doctor doctor : doctors.values()){
@@ -45,6 +50,6 @@ public class DoctorRepository {
         }
 
         return candidate;
-    }
+    }*/
 
 }

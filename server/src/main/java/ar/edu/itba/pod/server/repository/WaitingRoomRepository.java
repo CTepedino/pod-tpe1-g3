@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WaitingRoomRepository {
-
+/*
     private final RoomRepository rr;
     private final DoctorRepository dr;
 
@@ -54,6 +54,6 @@ public class WaitingRoomRepository {
             room.occupy(patient, doctor);
         }
     }
-
+*/
 
 }

@@ -1,14 +1,14 @@
 package ar.edu.itba.pod.server.model;
 
 public class Room {
-    private boolean available;
+   /* private boolean available;
     private Patient patient;
     private Doctor doctor;
-
+*/
     public Room(){
-        available = true;
+        //available = true;
     }
-
+/*
     public boolean isAvailable() {
         return available;
     }
@@ -23,5 +23,5 @@ public class Room {
         available = true;
         this.patient = null;
         this.doctor = null;
-    }
+    }*/
 }
