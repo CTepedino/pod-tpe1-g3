@@ -1,8 +1,10 @@
 package ar.edu.itba.pod.client;
 
+import ar.edu.itba.pod.grpc.waitingRoom.CheckPatientResponse;
 import ar.edu.itba.pod.grpc.waitingRoom.WaitingRoomServiceGrpc;
 import com.google.protobuf.StringValue;
 import com.google.protobuf.UInt32Value;
+import emergencyRoom.Messages;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
@@ -90,13 +92,13 @@ public class waitingRoomClient {
     private static void checkPatient(){
         String patientName = System.getProperty("patient");
         if(patientName == null){
-            System.out.println("No doctor specified");
+            System.out.println("No patient specified");
             return;
         }
 
         try {
-            UInt32Value patientsAhead = blockingStub.checkPatient(StringValue.of(patientName));
-            System.out.printf("Patient %s is in the waiting room with %d patients ahead\n", patientName, patientsAhead.getValue()); //TODO: Agregar el nivel del doctor. (Lo deberia retornar el server)
+            CheckPatientResponse response = blockingStub.checkPatient(StringValue.of(patientName));
+            System.out.printf("Patient %s (%d) is in the waiting room with %d patients ahead\n", patientName, response.getPatient().getLevel(), response.getWaitTime()); //TODO: Agregar el nivel del doctor. (Lo deberia retornar el server)
         } catch (StatusRuntimeException e){
             System.out.println(e.getMessage());
         }

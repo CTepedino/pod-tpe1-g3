@@ -1,9 +1,11 @@
 package ar.edu.itba.pod.client;
 
 import ar.edu.itba.pod.grpc.administration.AdministrationServiceGrpc;
-import ar.edu.itba.pod.grpc.administration.AvailabilityInfo;
+import ar.edu.itba.pod.grpc.administration.DoctorStatusRequest;
+import ar.edu.itba.pod.grpc.administration.DoctorStatusResponse;
 import com.google.protobuf.StringValue;
 import com.google.protobuf.UInt32Value;
+import emergencyRoom.Messages;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
@@ -80,6 +82,7 @@ public class administrationClient {
     private static void setDoctor(){
         String doctor = System.getProperty("doctor");
         String availability = System.getProperty("availability");
+        Messages.DoctorStatus status;
         if(doctor == null){
             System.out.println("No doctor specified");
             return;
@@ -89,12 +92,23 @@ public class administrationClient {
             return;
         }
 
-        Messages.DoctorInfo doctorInfo = Messages.DoctorInfo.newBuilder().setName(doctor).build();
-        AvailabilityInfo availabilityInfo = AvailabilityInfo.newBuilder().setAvailability(availability).setDoctor(doctorInfo).build();
+        switch (availability){
+            case "available":
+                status = Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE;
+                break;
+            case "unavailable":
+                status = Messages.DoctorStatus.DOCTOR_STATUS_UNAVAILABLE;
+                break;
+            default:
+                System.out.println("Unrecognized availability: " + availability);
+                return;
+        }
+
+        DoctorStatusRequest request = DoctorStatusRequest.newBuilder().setName(doctor).setStatus(status).build();
 
         try {
-            blockingStub.setDoctor(availabilityInfo);
-            System.out.printf("Doctor %s is %s\n", doctor, availability); //TODO: Agregar el nivel del doctor. (Lo deberia retornar el server)
+            DoctorStatusResponse response = blockingStub.setDoctor(request);
+            System.out.printf("Doctor %s (%d) is %s\n", doctor, response.getDoctor().getMaxLevel(), availability);
         } catch (StatusRuntimeException e){
             System.out.println(e.getMessage());
         }
@@ -108,8 +122,14 @@ public class administrationClient {
         }
 
         try {
-            AvailabilityInfo response = blockingStub.checkDoctor(StringValue.of(doctor));
-            System.out.printf("Doctor %s (%d) is %s\n", doctor, response.getDoctor().getMaxLevel(), response.getAvailability());
+            DoctorStatusResponse response = blockingStub.checkDoctor(StringValue.of(doctor));
+            String availability = switch (response.getStatus()) {
+                case DOCTOR_STATUS_AVAILABLE -> "Available";
+                case DOCTOR_STATUS_UNAVAILABLE -> "Unavailable";
+                case DOCTOR_STATUS_ATTENDING -> "Attending";
+                default -> "Unspecified";
+            };
+            System.out.printf("Doctor %s (%d) is %s\n", doctor, response.getDoctor().getMaxLevel(), availability);
         } catch (StatusRuntimeException e){
             System.out.println(e.getMessage());
         }
