@@ -8,28 +8,37 @@ import "messages.proto";
 package query;
 
 option java_package = "ar.edu.itba.pod.grpc.query";
-// option java_outer_classname = "queryServiceModel";
 option java_multiple_files = true;
 
 service QueryService {
-  rpc QueryRooms(google.protobuf.Empty) returns (RoomsInfo);
-  rpc QueryWaitingRoom(google.protobuf.Empty) returns (WaitingInfo);
-  rpc QueryCares(google.protobuf.UInt32Value) returns (CaresInfo);
+  rpc QueryRooms(google.protobuf.Empty) returns (QueryRoomsResponse);
+  rpc QueryWaitingRoom(google.protobuf.Empty) returns (QueryWaitingRoomResponse);
+  rpc QueryCares(QueryCaresRequest) returns (QueryCaresResponse);
+}
+
+enum RoomStatus {
+  ROOM_STATUS_UNSPECIFIED = 0;
+  ROOM_STATUS_FREE = 1;
+  ROOM_STATUS_OCCUPIED = 2;
 }
 
 message RoomInfo {
   uint32 room = 1;
   RoomStatus status = 2;
-  PatientInfo patient = 3;
-  DoctorInfo doctor = 4;
+  optional PatientInfo patient = 3;
+  optional DoctorInfo doctor = 4;
 }
 
-message RoomsInfo {
+message QueryRoomsResponse {
   repeated RoomInfo rooms = 1;
 }
 
-message WaitingInfo {
+message QueryWaitingRoomResponse {
   repeated PatientInfo patients = 1;
+}
+
+message QueryCaresRequest {
+  optional uint32 room = 1;
 }
 
 message CaredInfo {
@@ -38,6 +47,6 @@ message CaredInfo {
   DoctorInfo doctor = 3;
 }
 
-message CaresInfo {
+message QueryCaresResponse {
   repeated CaredInfo cares = 1;
 }

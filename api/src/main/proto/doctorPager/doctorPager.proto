@@ -8,13 +8,11 @@ import "messages.proto";
 package doctorPager;
 
 option java_package = "ar.edu.itba.pod.grpc.doctorPager";
-// option java_outer_classname = "doctorPagerServiceModel";
 option java_multiple_files = true;
-
 
 service DoctorPagerService {
   rpc Register(google.protobuf.StringValue) returns (stream DoctorEvent);
-  rpc Unregister(google.protobuf.StringValue) returns (google.protobuf.Empty);
+  rpc Unregister(google.protobuf.StringValue) returns (DoctorInfo);
 }
 
 enum Event {
@@ -27,10 +25,10 @@ enum Event {
 }
 
 message DoctorEvent {
-    DoctorInfo doctor = 1;
-    Event event = 2;
-    uint32 room = 3;
-    PatientInfo patient = 4;
-    DoctorStatus status = 5;
+  DoctorInfo doctor = 1;
+  Event event = 2;
+  optional uint32 room = 3;
+  optional PatientInfo patient = 4;
+  optional DoctorStatus status = 5;
 }
 
