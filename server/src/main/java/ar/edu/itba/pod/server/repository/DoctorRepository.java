@@ -19,7 +19,7 @@ public class DoctorRepository {
 
     public void addDoctor(String name, int maxLevel){
         Doctor doctor = new Doctor(name, maxLevel);
-        if(doctors.putIfAbsent(name, doctor) == null) {
+        if(doctors.putIfAbsent(name, doctor) != null) {
             throw new DoctorAlreadyExistsException(name);
         }
     }
