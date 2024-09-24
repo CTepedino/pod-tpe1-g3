@@ -2,4 +2,4 @@
 
 MAIN_CLASS="ar.edu.itba.pod.client.administrationClient"
 
-java  "$@" -cp 'lib/jars/*' $MAIN_CLASS
+java "$@" -cp 'lib/jars/*' $MAIN_CLASS
