@@ -4,6 +4,7 @@ import ar.edu.itba.pod.server.repository.DoctorRepository;
 import ar.edu.itba.pod.server.repository.RoomRepository;
 import ar.edu.itba.pod.server.repository.WaitingRoomRepository;
 import ar.edu.itba.pod.server.service.AdministrationService;
+import ar.edu.itba.pod.server.service.EmergencyCareService;
 import ar.edu.itba.pod.server.service.WaitingRoomService;
 import io.grpc.BindableService;
 import io.grpc.ServerBuilder;
@@ -34,6 +35,7 @@ public class Server {
         io.grpc.Server server = ServerBuilder.forPort(port)
                 .addService(exceptionHandler.apply(new AdministrationService(dr, rr)))
                 .addService(exceptionHandler.apply(new WaitingRoomService(wr)))
+                .addService(exceptionHandler.apply(new EmergencyCareService(wr)))
                 .build();
         server.start();
 

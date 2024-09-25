@@ -13,12 +13,14 @@ public class Room {
         doctor.setStatus(Messages.DoctorStatus.DOCTOR_STATUS_ATTENDING);
     }
 
-    public synchronized void endCare(String patientName, String doctorName){
+    public synchronized Patient endCare(String patientName, String doctorName){
+        Patient toReturn = patient;
         if (patientName.equals(this.patient.getName()) && doctorName.equals(doctor.getName())){
             patient = null;
             doctor.setStatus(Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE);
             doctor = null;
         } //else throw...
+        return patient;
     }
 
     public boolean isAvailable() {

@@ -1,19 +1,18 @@
 package ar.edu.itba.pod.server.repository;
 
-import ar.edu.itba.pod.server.exception.ImpossibleToStartCareException;
-import ar.edu.itba.pod.server.exception.NoPatientsException;
+import ar.edu.itba.pod.grpc.emergencyCare.CarePatientResponse;
+import ar.edu.itba.pod.grpc.emergencyCare.RoomUpdateStatus;
 import ar.edu.itba.pod.server.exception.PatientAlreadyExistsException;
 import ar.edu.itba.pod.server.exception.PatientNotFoundException;
 import ar.edu.itba.pod.server.model.Doctor;
 import ar.edu.itba.pod.server.model.Patient;
 import ar.edu.itba.pod.server.model.Room;
+import emergencyRoom.Messages;
 
 
 import java.util.*;
 
 public class WaitingRoomRepository {
-
-    private static final int EMERGENCY_LEVELS = 5;
 
     private final List<Patient> patients;
     private final List<String> discharged;
@@ -24,7 +23,7 @@ public class WaitingRoomRepository {
     public WaitingRoomRepository(RoomRepository rr, DoctorRepository dr){
         this.rr = rr;
         this.dr = dr;
-        patients = new ArrayList<>(); //Tener muchas queues se complica si cambia el nivel de un paciente, asi que creo que lo mejor es iterar por una sola lista ordenada por llegada y ver el nivel de c/u
+        patients = new ArrayList<>();
         discharged = new ArrayList<>();
     }
 
@@ -70,15 +69,15 @@ public class WaitingRoomRepository {
         return ahead;
     }
 
-    public synchronized void startCare(int roomNumber){
+    public synchronized CarePatientResponse startCare(int roomNumber){
         Room room = rr.getRoom(roomNumber);
 
         if (!room.isAvailable()){
-            //throw new ...
+            return careResponseErrorBuilder(roomNumber, RoomUpdateStatus.ROOM_STATUS_WAS_OCCUPIED);
         }
 
         if (patients.isEmpty()){
-            throw new NoPatientsException();
+            return careResponseErrorBuilder(roomNumber, RoomUpdateStatus.ROOM_STATUS_STILL_FREE);
         }
 
         Doctor doctor = null;
@@ -87,7 +86,7 @@ public class WaitingRoomRepository {
 
         while (doctor == null) {
             if (maxLevel == 0){
-                throw new ImpossibleToStartCareException(roomNumber);
+                return careResponseErrorBuilder(roomNumber, RoomUpdateStatus.ROOM_STATUS_STILL_FREE);
             }
             patient = getPatientForCare(maxLevel);
             doctor = dr.getDoctorForCare(patient.getLevel());
@@ -96,6 +95,8 @@ public class WaitingRoomRepository {
 
         room.startCare(patient, doctor);
         patients.remove(patient);
+
+        return careResponseBuilder(roomNumber, patient, doctor);
     }
 
     private Patient getPatientForCare(int maxLevel){
@@ -111,14 +112,47 @@ public class WaitingRoomRepository {
         return candidate;
     }
 
-    public synchronized void startAllCare(){
+    public synchronized List<CarePatientResponse> startAllCare(){
+        List<CarePatientResponse> caresInfo = new ArrayList<>();
+
         for (int room = 1; room <= rr.getRoomCount(); room++){
-            startCare(room);
+            caresInfo.add(startCare(room));
         }
+        return caresInfo;
     }
 
-    public synchronized void endCare(int room, String patient, String doctor){
-        rr.getRoom(room).endCare(patient, doctor);
-        discharged.add(patient);
+    public synchronized CarePatientResponse endCare(int room, String patientName, String doctorName){
+        Patient patient = rr.getRoom(room).endCare(patientName, doctorName);
+        discharged.add(patientName);
+
+        return careResponseBuilder(room, patient, dr.getDoctor(doctorName));
+    }
+
+
+
+    private CarePatientResponse careResponseBuilder(int room, Patient patient, Doctor doctor){
+        return CarePatientResponse.newBuilder()
+                .setRoom(room)
+                .setStatus(RoomUpdateStatus.ROOM_STATUS_OK)
+                .setPatient(
+                    Messages.PatientInfo.newBuilder()
+                            .setName(patient.getName())
+                            .setLevel(patient.getLevel())
+                            .build()
+                )
+                .setDoctor(
+                    Messages.DoctorInfo.newBuilder()
+                            .setName(doctor.getName())
+                            .setMaxLevel(doctor.getLevel())
+                            .build()
+                )
+                .build();
+    }
+
+    private CarePatientResponse careResponseErrorBuilder(int room, RoomUpdateStatus status){
+        return CarePatientResponse.newBuilder()
+                .setRoom(room)
+                .setStatus(status)
+                .build();
     }
 }
