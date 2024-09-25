@@ -38,16 +38,18 @@ public class GlobalExceptionHandlerInterceptor implements ServerInterceptor {
             }
         }
 
-        private final Map<Class<? extends Throwable>, Code> errorCodesByException = Map.of(
-                DoctorAlreadyExistsException.class, Code.ALREADY_EXISTS,
-                DoctorIsAttendingException.class, Code.FAILED_PRECONDITION,
-                DoctorNotFoundException.class, Code.NOT_FOUND,
-                InvalidEmergencyLevelException.class, Code.INVALID_ARGUMENT,
-                InvalidPatientDoctorPairException.class, Code.INVALID_ARGUMENT,
-                NoRoomsException.class, Code.FAILED_PRECONDITION,
-                PatientAlreadyExistsException.class, Code.ALREADY_EXISTS,
-                PatientNotFoundException.class, Code.NOT_FOUND,
-                RoomNotFoundException.class, Code.NOT_FOUND
+        private final Map<Class<? extends Throwable>, Code> errorCodesByException = Map.ofEntries(
+                Map.entry(DoctorAlreadyExistsException.class, Code.ALREADY_EXISTS),
+                Map.entry(DoctorIsAttendingException.class, Code.FAILED_PRECONDITION),
+                Map.entry(DoctorNotFoundException.class, Code.NOT_FOUND),
+                Map.entry(InvalidEmergencyLevelException.class, Code.INVALID_ARGUMENT),
+                Map.entry(InvalidPatientDoctorPairException.class, Code.INVALID_ARGUMENT),
+                Map.entry(NoDischargedPatientsException.class, Code.FAILED_PRECONDITION),
+                Map.entry(NoPatientsInWaitRoomException.class, Code.FAILED_PRECONDITION),
+                Map.entry(NoRoomsException.class, Code.FAILED_PRECONDITION),
+                Map.entry(PatientAlreadyExistsException.class, Code.ALREADY_EXISTS),
+                Map.entry(PatientNotFoundException.class, Code.NOT_FOUND),
+                Map.entry(RoomNotFoundException.class, Code.NOT_FOUND)
         );
 
         private void handleException(RuntimeException exception, ServerCall<T, R> serverCall, Metadata headers) {

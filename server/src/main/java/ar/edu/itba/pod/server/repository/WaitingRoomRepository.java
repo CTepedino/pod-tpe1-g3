@@ -3,6 +3,8 @@ package ar.edu.itba.pod.server.repository;
 import ar.edu.itba.pod.grpc.emergencyCare.CarePatientResponse;
 import ar.edu.itba.pod.grpc.emergencyCare.RoomUpdateStatus;
 import ar.edu.itba.pod.grpc.query.CaredInfo;
+import ar.edu.itba.pod.server.exception.NoDischargedPatientsException;
+import ar.edu.itba.pod.server.exception.NoPatientsInWaitRoomException;
 import ar.edu.itba.pod.server.exception.PatientAlreadyExistsException;
 import ar.edu.itba.pod.server.exception.PatientNotFoundException;
 import ar.edu.itba.pod.server.model.DischargedEntry;
@@ -150,6 +152,10 @@ public class WaitingRoomRepository {
 
 
     public List<Messages.PatientInfo> queryWaitingRoom(){
+        if (patients.isEmpty()){
+            throw new NoPatientsInWaitRoomException();
+        }
+
         List<Messages.PatientInfo> info = new ArrayList<>();
         for (Patient p: patients){
             info.add(p.toPatientInfo());
@@ -159,6 +165,10 @@ public class WaitingRoomRepository {
 
 
     public List<CaredInfo> queryCares(){
+        if (discharged.isEmpty()){
+            throw new NoDischargedPatientsException();
+        }
+
         List<CaredInfo> info = new ArrayList<>();
         for (DischargedEntry entry : discharged){
             info.add(entry.toCaredInfo());
