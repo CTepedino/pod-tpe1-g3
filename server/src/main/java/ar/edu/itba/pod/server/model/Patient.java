@@ -1,19 +1,21 @@
 package ar.edu.itba.pod.server.model;
 
+import ar.edu.itba.pod.server.exception.InvalidEmergencyLevelException;
+
 import java.util.Objects;
 
 public class Patient {
     private final String name;
     private int level;
 
-    public Patient(String name, int level) throws IllegalArgumentException{
+    public Patient(String name, int level){
         this.name = name;
         setLevel(level);
     }
 
     public void setLevel(int level) {
         if (level > 5 || level < 1){
-            throw new IllegalArgumentException("level must be between 1 and 5");
+            throw new InvalidEmergencyLevelException("level must be between 1 and 5");
         }
         this.level = level;
     }

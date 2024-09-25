@@ -1,41 +1,67 @@
 package ar.edu.itba.pod.server.repository;
 
+import ar.edu.itba.pod.server.exception.PatientAlreadyExistsException;
+import ar.edu.itba.pod.server.exception.PatientNotFoundException;
 import ar.edu.itba.pod.server.model.Doctor;
 import ar.edu.itba.pod.server.model.Patient;
 import ar.edu.itba.pod.server.model.Room;
+import org.checkerframework.checker.units.qual.C;
 
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WaitingRoomRepository {
-/*
-    private final RoomRepository rr;
-    private final DoctorRepository dr;
 
-    private final Map<String, Patient> patients; //TODO: change for queue with priority levels
+    private static final int EMERGENCY_LEVELS = 5;
 
-    public WaitingRoomRepository(RoomRepository rr, DoctorRepository dr){
-        this.rr = rr;
-        this.dr = dr;
-        patients = new HashMap<>();
+    private final List<Patient> patients;
+
+
+    public WaitingRoomRepository(){
+        patients = new ArrayList<>(); //Tener muchas queues se complica si cambia el nivel de un paciente, asi que creo que lo mejor es iterar por una sola lista ordenada por llegada y ver el nivel de c/u
     }
 
-    public void addPatient(String name, int level) throws IllegalArgumentException{
-
+    public synchronized void addPatient(String name, int level){
         Patient patient = new Patient(name, level);
-        if (patients.putIfAbsent(name, patient) == null){
-            throw new IllegalArgumentException("Patient "+ name +" already exists");
+        for (Patient p : patients){
+            if (p.equals(patient)){
+                throw new PatientAlreadyExistsException(name);
+            }
         }
+        patients.add(patient);
     }
 
-    public Patient getPatient(String name){
-        return patients.get(name);
+    private Patient findByName(String name){
+        for (Patient p : patients){
+            if (p.getName().equals(name)){
+                return p;
+            }
+        }
+        throw new PatientNotFoundException(name);
     }
 
-    public int getPatientsAhead(String name){
-        return 0;//TODO
+    public synchronized void updateLevel(String name, int level){
+        Patient patient = findByName(name);
+        patient.setLevel(level);
     }
+
+    public synchronized int getPatientsAhead(String name){
+        Patient patient = findByName(name);
+        int ahead = 0;
+        for (Patient p : patients){
+            if (patient.equals(p)){
+                break;
+            }
+            if (patient.getLevel() <= p.getLevel()){
+                ahead++;
+            }
+        }
+        return ahead;
+    }
+
+/*
+
 
     public void startAttention(int roomNumber){//TODO: tomar en orden correcto los pacientes y removerlos de la lista de espera
         Room room = rr.getRoom(roomNumber);
