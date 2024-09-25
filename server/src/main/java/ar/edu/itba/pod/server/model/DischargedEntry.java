@@ -1,5 +1,7 @@
 package ar.edu.itba.pod.server.model;
 
+import ar.edu.itba.pod.grpc.query.CaredInfo;
+
 public class DischargedEntry {
     private final int room;
     private final Patient patient;
@@ -23,5 +25,11 @@ public class DischargedEntry {
         return doctor;
     }
 
-
+    public CaredInfo toCaredInfo(){
+        return CaredInfo.newBuilder()
+                .setRoom(room)
+                .setDoctor(doctor.toDoctorInfo())
+                .setPatient(patient.toPatientInfo())
+                .build();
+    }
 }

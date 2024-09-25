@@ -2,6 +2,7 @@ package ar.edu.itba.pod.server.repository;
 
 import ar.edu.itba.pod.grpc.emergencyCare.CarePatientResponse;
 import ar.edu.itba.pod.grpc.emergencyCare.RoomUpdateStatus;
+import ar.edu.itba.pod.grpc.query.CaredInfo;
 import ar.edu.itba.pod.server.exception.PatientAlreadyExistsException;
 import ar.edu.itba.pod.server.exception.PatientNotFoundException;
 import ar.edu.itba.pod.server.model.DischargedEntry;
@@ -145,5 +146,33 @@ public class WaitingRoomRepository {
                 .setRoom(room)
                 .setStatus(status)
                 .build();
+    }
+
+
+    public List<Messages.PatientInfo> queryWaitingRoom(){
+        List<Messages.PatientInfo> info = new ArrayList<>();
+        for (Patient p: patients){
+            info.add(p.toPatientInfo());
+        }
+        return info;
+    }
+
+
+    public List<CaredInfo> queryCares(){
+        List<CaredInfo> info = new ArrayList<>();
+        for (DischargedEntry entry : discharged){
+            info.add(entry.toCaredInfo());
+        }
+        return info;
+    }
+
+    public List<CaredInfo> queryCares(int room){
+        List<CaredInfo> info = new ArrayList<>();
+        for (DischargedEntry entry : discharged){
+            if (entry.getRoom() == room){
+                info.add(entry.toCaredInfo());
+            }
+        }
+        return info;
     }
 }

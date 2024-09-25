@@ -18,12 +18,26 @@ public class QueryService extends QueryServiceGrpc.QueryServiceImplBase {
 
     @Override
     public void queryWaitingRoom(Empty request, StreamObserver<QueryWaitingRoomResponse> responseObserver) {
+        QueryWaitingRoomResponse response = QueryWaitingRoomResponse.newBuilder()
+                .addAllPatients(wr.queryWaitingRoom())
+                .build();
 
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 
     @Override
     public void queryCares(QueryCaresRequest request, StreamObserver<QueryCaresResponse> responseObserver) {
+        QueryCaresResponse.Builder builder = QueryCaresResponse.newBuilder();
 
+        if (request.hasRoom()){
+             builder.addAllCares(wr.queryCares(request.getRoom()));
+        } else {
+            builder.addAllCares(wr.queryCares());
+        }
+
+        responseObserver.onNext(builder.build());
+        responseObserver.onCompleted();
     }
 
     @Override
