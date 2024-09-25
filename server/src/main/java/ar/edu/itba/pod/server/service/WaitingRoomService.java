@@ -38,12 +38,7 @@ public class WaitingRoomService extends WaitingRoomServiceGrpc.WaitingRoomServic
         Patient patient = wr.findByName(request.getValue());
         int ahead = wr.getPatientsAhead(patient);
         CheckPatientResponse response = CheckPatientResponse.newBuilder()
-                .setPatient(
-                        PatientInfo.newBuilder()
-                                .setName(patient.getName())
-                                .setLevel(patient.getLevel())
-                                .build()
-                )
+                .setPatient(patient.toPatientInfo())
                 .setWaitTime(ahead)
                 .build();
 

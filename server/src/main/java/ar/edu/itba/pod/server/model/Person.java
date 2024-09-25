@@ -8,7 +8,7 @@ public abstract class Person {
     private static final int MAX_LEVEL = 5;
 
     protected final String name;
-    private int level;
+    protected int level;
 
     protected Person(String name, int level) {
         this.name = name;

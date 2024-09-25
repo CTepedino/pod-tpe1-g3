@@ -39,12 +39,12 @@ public class AdministrationService extends AdministrationServiceGrpc.Administrat
         responseObserver.onCompleted();
     }
 
-    //FIXME: esta bien usar el enum de la api en el repositorio? O sería mejor traducirlo a un enum propio del server para tenerlo mejor modularizado?
+
     @Override
     public void setDoctor(DoctorStatusRequest request, StreamObserver<DoctorStatusResponse> responseObserver) {
         Doctor doctor = dr.setDoctorStatus(request.getName(), request.getStatus());
 
-        responseObserver.onNext(buildDoctorStatusResponse(doctor));
+        responseObserver.onNext(doctor.toDoctorStatusResponse());
         responseObserver.onCompleted();
     }
 
@@ -52,17 +52,9 @@ public class AdministrationService extends AdministrationServiceGrpc.Administrat
     public void checkDoctor(StringValue request, StreamObserver<DoctorStatusResponse> responseObserver) {
         Doctor doctor = dr.getDoctor(request.getValue());
 
-        responseObserver.onNext(buildDoctorStatusResponse(doctor));
+        responseObserver.onNext(doctor.toDoctorStatusResponse());
         responseObserver.onCompleted();
     }
 
-    private DoctorStatusResponse buildDoctorStatusResponse(Doctor doctor){
-        return DoctorStatusResponse.newBuilder()
-                .setDoctor(Messages.DoctorInfo.newBuilder()
-                        .setName(doctor.getName())
-                        .setMaxLevel(doctor.getMaxLevel())
-                        .build())
-                .setStatus(doctor.getStatus())
-                .build();
-    }
+
 }

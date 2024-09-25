@@ -4,6 +4,7 @@ import ar.edu.itba.pod.grpc.emergencyCare.CarePatientResponse;
 import ar.edu.itba.pod.grpc.emergencyCare.RoomUpdateStatus;
 import ar.edu.itba.pod.server.exception.PatientAlreadyExistsException;
 import ar.edu.itba.pod.server.exception.PatientNotFoundException;
+import ar.edu.itba.pod.server.model.DischargedEntry;
 import ar.edu.itba.pod.server.model.Doctor;
 import ar.edu.itba.pod.server.model.Patient;
 import ar.edu.itba.pod.server.model.Room;
@@ -15,7 +16,7 @@ import java.util.*;
 public class WaitingRoomRepository {
 
     private final List<Patient> patients;
-    private final List<String> discharged;
+    private final List<DischargedEntry> discharged;
 
     private final RoomRepository rr;
     private final DoctorRepository dr;
@@ -34,8 +35,8 @@ public class WaitingRoomRepository {
                 throw new PatientAlreadyExistsException(name);
             }
         }
-        for (String oldPatient : discharged){
-            if (oldPatient.equals(name)){
+        for (DischargedEntry entry : discharged){
+            if (entry.getPatient().equals(patient)){
                 throw new PatientAlreadyExistsException(name);
             }
         }
@@ -122,34 +123,24 @@ public class WaitingRoomRepository {
     }
 
     public synchronized CarePatientResponse endCare(int room, String patientName, String doctorName){
-        Patient patient = rr.getRoom(room).endCare(patientName, doctorName);
-        discharged.add(patientName);
+        DischargedEntry dischargedEntry = rr.getRoom(room).endCare(patientName, doctorName);
+        discharged.add(dischargedEntry);
 
-        return careResponseBuilder(room, patient, dr.getDoctor(doctorName));
+        return careResponseBuilder(room, dischargedEntry.getPatient(), dischargedEntry.getDoctor());
     }
 
 
 
-    private CarePatientResponse careResponseBuilder(int room, Patient patient, Doctor doctor){
+    private static CarePatientResponse careResponseBuilder(int room, Patient patient, Doctor doctor){
         return CarePatientResponse.newBuilder()
                 .setRoom(room)
                 .setStatus(RoomUpdateStatus.ROOM_STATUS_OK)
-                .setPatient(
-                    Messages.PatientInfo.newBuilder()
-                            .setName(patient.getName())
-                            .setLevel(patient.getLevel())
-                            .build()
-                )
-                .setDoctor(
-                    Messages.DoctorInfo.newBuilder()
-                            .setName(doctor.getName())
-                            .setMaxLevel(doctor.getLevel())
-                            .build()
-                )
+                .setPatient(patient.toPatientInfo())
+                .setDoctor(doctor.toDoctorInfo())
                 .build();
     }
 
-    private CarePatientResponse careResponseErrorBuilder(int room, RoomUpdateStatus status){
+    private static CarePatientResponse careResponseErrorBuilder(int room, RoomUpdateStatus status){
         return CarePatientResponse.newBuilder()
                 .setRoom(room)
                 .setStatus(status)

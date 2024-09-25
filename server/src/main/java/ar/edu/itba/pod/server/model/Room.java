@@ -1,12 +1,22 @@
 package ar.edu.itba.pod.server.model;
 
+import ar.edu.itba.pod.grpc.emergencyCare.CarePatientResponse;
+import ar.edu.itba.pod.grpc.emergencyCare.RoomUpdateStatus;
+import ar.edu.itba.pod.grpc.query.RoomInfo;
+import ar.edu.itba.pod.grpc.query.RoomInfoOrBuilder;
+import ar.edu.itba.pod.grpc.query.RoomStatus;
 import ar.edu.itba.pod.server.exception.InvalidPatientDoctorPairException;
 import emergencyRoom.Messages;
 
 public class Room {
 
+    private int number;
     private Patient patient;
     private Doctor doctor;
+
+    public Room(int number){
+        this.number = number;
+    }
 
     public synchronized void startCare(Patient patient, Doctor doctor){
         this.patient = patient;
@@ -14,8 +24,8 @@ public class Room {
         doctor.setStatus(Messages.DoctorStatus.DOCTOR_STATUS_ATTENDING);
     }
 
-    public synchronized Patient endCare(String patientName, String doctorName){
-        Patient toReturn = patient;
+    public synchronized DischargedEntry endCare(String patientName, String doctorName){
+        DischargedEntry toReturn = new DischargedEntry(number, patient, doctor);
         if (patientName.equals(this.patient.getName()) && doctorName.equals(doctor.getName())){
             patient = null;
             doctor.setStatus(Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE);
@@ -37,5 +47,26 @@ public class Room {
     public Doctor getDoctor() {
         return doctor;
     }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public RoomInfo toRoomInfo(){
+        RoomInfo.Builder builder = RoomInfo.newBuilder()
+                .setRoom(number);
+        if (isAvailable()){
+            return builder
+                    .setStatus(RoomStatus.ROOM_STATUS_FREE)
+                    .build();
+        } else {
+            return builder
+                    .setStatus(RoomStatus.ROOM_STATUS_OCCUPIED)
+                    .setPatient(patient.toPatientInfo())
+                    .setDoctor(doctor.toDoctorInfo())
+                    .build();
+        }
+    }
+
 
 }

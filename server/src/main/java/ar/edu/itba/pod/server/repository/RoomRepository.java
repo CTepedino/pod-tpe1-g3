@@ -1,5 +1,7 @@
 package ar.edu.itba.pod.server.repository;
 
+import ar.edu.itba.pod.grpc.query.RoomInfo;
+import ar.edu.itba.pod.server.exception.NoRoomsException;
 import ar.edu.itba.pod.server.exception.RoomNotFoundException;
 import ar.edu.itba.pod.server.model.Room;
 
@@ -15,8 +17,9 @@ public class RoomRepository {
     }
 
     public synchronized int addRoom(){
-        rooms.add(new Room());
-        return rooms.size();
+        Room room = new Room(rooms.size()+1);
+        rooms.add(room);
+        return room.getNumber();
     }
 
 
@@ -30,4 +33,18 @@ public class RoomRepository {
     public int getRoomCount(){
         return rooms.size();
     }
+
+    public List<RoomInfo> queryRooms(){
+        if (rooms.isEmpty()){
+            throw new NoRoomsException();
+        }
+
+        List<RoomInfo> info = new ArrayList<>();
+        for (Room room : rooms){
+            info.add(room.toRoomInfo());
+        }
+        return info;
+    }
+
+
 }
