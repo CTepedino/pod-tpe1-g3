@@ -107,7 +107,7 @@ public class WaitingRoomRepository {
     }
 
     private Patient getPatientForCare(int maxLevel){
-        Patient candidate = patients.getFirst();
+        Patient candidate = patients.get(0);
         for (Patient p : patients){
             if (candidate.getLevel() == maxLevel){
                 break;
