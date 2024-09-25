@@ -1,5 +1,6 @@
 package ar.edu.itba.pod.server.model;
 
+import ar.edu.itba.pod.server.exception.InvalidPatientDoctorPairException;
 import emergencyRoom.Messages;
 
 public class Room {
@@ -19,8 +20,10 @@ public class Room {
             patient = null;
             doctor.setStatus(Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE);
             doctor = null;
-        } //else throw...
-        return patient;
+        } else {
+            throw new InvalidPatientDoctorPairException();
+        }
+        return toReturn;
     }
 
     public boolean isAvailable() {

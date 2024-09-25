@@ -1,10 +1,7 @@
 package ar.edu.itba.pod.server;
 
 
-import ar.edu.itba.pod.server.exception.DoctorAlreadyExistsException;
-import ar.edu.itba.pod.server.exception.DoctorIsAttendingException;
-import ar.edu.itba.pod.server.exception.DoctorNotFoundException;
-import ar.edu.itba.pod.server.exception.InvalidEmergencyLevelException;
+import ar.edu.itba.pod.server.exception.*;
 import com.google.rpc.Code;
 import io.grpc.*;
 import io.grpc.protobuf.StatusProto;
@@ -43,9 +40,13 @@ public class GlobalExceptionHandlerInterceptor implements ServerInterceptor {
 
         private final Map<Class<? extends Throwable>, Code> errorCodesByException = Map.of(
                 DoctorAlreadyExistsException.class, Code.ALREADY_EXISTS,
-                InvalidEmergencyLevelException.class, Code.INVALID_ARGUMENT,
+                DoctorIsAttendingException.class, Code.FAILED_PRECONDITION,
                 DoctorNotFoundException.class, Code.NOT_FOUND,
-                DoctorIsAttendingException.class, Code.FAILED_PRECONDITION
+                InvalidEmergencyLevelException.class, Code.INVALID_ARGUMENT,
+                InvalidPatientDoctorPairException.class, Code.INVALID_ARGUMENT,
+                PatientAlreadyExistsException.class, Code.ALREADY_EXISTS,
+                PatientNotFoundException.class, Code.NOT_FOUND,
+                RoomNotFoundException.class, Code.NOT_FOUND
         );
 
         private void handleException(RuntimeException exception, ServerCall<T, R> serverCall, Metadata headers) {
