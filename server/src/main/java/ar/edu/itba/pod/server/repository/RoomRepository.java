@@ -1,5 +1,6 @@
 package ar.edu.itba.pod.server.repository;
 
+import ar.edu.itba.pod.server.exception.RoomNotFoundException;
 import ar.edu.itba.pod.server.model.Room;
 
 import java.util.ArrayList;
@@ -18,21 +19,15 @@ public class RoomRepository {
         return rooms.size();
     }
 
-/*
-    public Room getRoom(int roomNumber){
+
+    public synchronized Room getRoom(int roomNumber){
+        if (rooms.size() < roomNumber){
+            throw new RoomNotFoundException(roomNumber);
+        }
         return rooms.get(roomNumber-1);
     }
 
-    public Room getAvailableRoom(){
-        for (Room room : rooms){
-            if (room.isAvailable()){
-                return room;
-            }
-        }
-        return null;
+    public int getRoomCount(){
+        return rooms.size();
     }
-
-    public void freeRoom(int roomNumber){
-        getRoom(roomNumber).free();
-    }*/
 }

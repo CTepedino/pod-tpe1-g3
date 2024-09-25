@@ -29,7 +29,7 @@ public class Server {
 
         DoctorRepository dr = new DoctorRepository();
         RoomRepository rr = new RoomRepository();
-        WaitingRoomRepository wr = new WaitingRoomRepository();
+        WaitingRoomRepository wr = new WaitingRoomRepository(rr, dr);
 
         io.grpc.Server server = ServerBuilder.forPort(port)
                 .addService(exceptionHandler.apply(new AdministrationService(dr, rr)))

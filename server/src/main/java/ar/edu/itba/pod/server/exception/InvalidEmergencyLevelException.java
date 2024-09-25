@@ -1,14 +1,14 @@
 package ar.edu.itba.pod.server.exception;
 
 public class InvalidEmergencyLevelException extends RuntimeException {
-    private final String levelFieldName;
+    private final int maxLevel;
 
-    public InvalidEmergencyLevelException(String levelFieldName) {
-        this.levelFieldName = levelFieldName;
+    public InvalidEmergencyLevelException(int maxLevel) {
+        this.maxLevel = maxLevel;
     }
 
     @Override
     public String getMessage() {
-        return levelFieldName + " must be between 1 and 5";
+        return "Level must be between 1 and " + maxLevel;
     }
 }

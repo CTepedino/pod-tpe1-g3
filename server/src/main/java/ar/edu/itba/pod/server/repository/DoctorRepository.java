@@ -38,6 +38,24 @@ public class DoctorRepository {
         return doctor;
     }
 
+    Doctor getDoctorForCare(int level){
+        Doctor candidate = null;
+
+        for (Doctor doctor : doctors.values()){
+            if (doctor.getMaxLevel() >= level && doctor.getStatus().equals(DoctorStatus.DOCTOR_STATUS_AVAILABLE)){
+                if (candidate == null){
+                    candidate = doctor;
+                } else if (doctor.getMaxLevel() < candidate.getMaxLevel()){
+                    candidate = doctor;
+                } else if (doctor.getMaxLevel() == candidate.getMaxLevel() && doctor.getName().compareToIgnoreCase(candidate.getName()) < 0){
+                    candidate = doctor;
+                }
+            }
+        }
+
+        return candidate;
+    }
+
   /*  public Doctor getAvailableDoctor(int level){
         Doctor candidate = null;
 

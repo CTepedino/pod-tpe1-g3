@@ -26,8 +26,8 @@ enum RoomUpdateStatus {
 message CarePatientResponse {
   uint32 room = 1;
   RoomUpdateStatus status = 2;
-  PatientInfo patient = 3;
-  DoctorInfo doctor = 4;
+  optional PatientInfo patient = 3;
+  optional DoctorInfo doctor = 4;
 }
 
 message CareAllPatientsResponse {

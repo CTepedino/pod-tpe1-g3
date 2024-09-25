@@ -1,31 +1,10 @@
 package ar.edu.itba.pod.server.model;
 
-import ar.edu.itba.pod.server.exception.InvalidEmergencyLevelException;
 
-import java.util.Objects;
-
-public class Patient {
-    private final String name;
-    private int level;
+public class Patient extends Person {
 
     public Patient(String name, int level){
-        this.name = name;
-        setLevel(level);
-    }
-
-    public void setLevel(int level) {
-        if (level > 5 || level < 1){
-            throw new InvalidEmergencyLevelException("level must be between 1 and 5");
-        }
-        this.level = level;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getLevel() {
-        return level;
+        super(name, level);
     }
 
     @Override
@@ -35,8 +14,4 @@ public class Patient {
         return name.equals(patient.name);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(name);
-    }
 }
