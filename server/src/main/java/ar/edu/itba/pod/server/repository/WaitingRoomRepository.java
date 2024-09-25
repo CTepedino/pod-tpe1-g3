@@ -26,13 +26,13 @@ public class WaitingRoomRepository {
         Patient patient = new Patient(name, level);
         for (Patient p : patients){
             if (p.equals(patient)){
-                throw new PatientAlreadyExistsException(name);
+                throw new PatientAlreadyExistsException(name); //TODO: falta ver que no este siendo atendido o que ya haya sido atendido
             }
         }
         patients.add(patient);
     }
 
-    private Patient findByName(String name){
+    public synchronized Patient findByName(String name){
         for (Patient p : patients){
             if (p.getName().equals(name)){
                 return p;
@@ -46,8 +46,7 @@ public class WaitingRoomRepository {
         patient.setLevel(level);
     }
 
-    public synchronized int getPatientsAhead(String name){
-        Patient patient = findByName(name);
+    public synchronized int getPatientsAhead(Patient patient){
         int ahead = 0;
         for (Patient p : patients){
             if (patient.equals(p)){
