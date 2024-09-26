@@ -25,7 +25,7 @@ public class RoomRepository {
 
 
     public synchronized Room getRoom(int roomNumber){
-        if (rooms.size() < roomNumber){
+        if (roomNumber < 1 || rooms.size() < roomNumber){
             throw new RoomNotFoundException(roomNumber);
         }
         return rooms.get(roomNumber-1);
