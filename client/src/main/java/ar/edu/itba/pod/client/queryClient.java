@@ -29,7 +29,7 @@ public class queryClient {
         }
 
         String pathString = System.getProperty("outPath");
-        if (outPath == null){
+        if (pathString == null){
             System.out.println("No output path specified");
             return;
         }
