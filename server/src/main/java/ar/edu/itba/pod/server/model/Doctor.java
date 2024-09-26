@@ -28,6 +28,7 @@ public class Doctor extends Person{
     public void setStatus(DoctorStatus status){
         lock.lock();
         if (this.status == DoctorStatus.DOCTOR_STATUS_ATTENDING){
+            lock.unlock();
             throw new DoctorIsAttendingException(name);
         }
         this.status = status;
