@@ -1,5 +1,10 @@
 package ar.edu.itba.pod.server.repository;
 
+import ar.edu.itba.pod.server.Server;
+import ar.edu.itba.pod.server.exception.DoctorAlreadyExistsException;
+import ar.edu.itba.pod.server.exception.DoctorIsAttendingException;
+import ar.edu.itba.pod.server.exception.InvalidPatientDoctorPairException;
+import ar.edu.itba.pod.server.exception.PatientAlreadyExistsException;
 import ar.edu.itba.pod.server.service.EmergencyCareService;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
@@ -7,13 +12,23 @@ import emergencyRoom.Messages;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EmergencyCareServiceTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(EmergencyCareServiceTest.class);
+
+    private static final int THREAD_COUNT = 10;
+
     private EmergencyCareService service;
 
     private WaitingRoomRepository waitingRoomRepository;
@@ -23,6 +38,97 @@ public class EmergencyCareServiceTest {
     private RoomRepository roomRepository;
 
     private EventRepository eventRepository;
+
+    private final Runnable test = () -> {
+        try{
+            waitingRoomRepository.addPatient("pablo", 4);
+        }catch(PatientAlreadyExistsException e){
+            logger.info(e.getMessage());
+        }
+        try{
+            waitingRoomRepository.addPatient("juana", 5);
+        }catch(PatientAlreadyExistsException e){
+            logger.info(e.getMessage());
+        }
+        try{
+            waitingRoomRepository.addPatient("luca", 2);
+        }catch(PatientAlreadyExistsException e){
+            logger.info(e.getMessage());
+        }
+
+        try{
+            doctorRepository.addDoctor("doctor1", 5);
+        }catch(DoctorAlreadyExistsException e){
+            logger.info(e.getMessage());
+        }
+        try{
+            doctorRepository.addDoctor("doctor2", 5);
+        }catch(DoctorAlreadyExistsException e){
+            logger.info(e.getMessage());
+        }
+
+        try{
+            doctorRepository.setDoctorStatus("doctor1", Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE);
+        }catch(DoctorIsAttendingException e){
+            logger.info(e.getMessage());
+        }
+        try{
+            doctorRepository.setDoctorStatus("doctor2", Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE);
+        }catch(DoctorIsAttendingException e){
+            logger.info(e.getMessage());
+        }
+
+        roomRepository.addRoom();
+        roomRepository.addRoom();
+
+        waitingRoomRepository.startAllCare();
+
+
+        try{
+            waitingRoomRepository.endCare(1, "juana", "doctor1");
+        }catch (InvalidPatientDoctorPairException e){
+            logger.info(e.getMessage());
+        }
+        waitingRoomRepository.startAllCare();
+
+        try{
+            waitingRoomRepository.endCare(2, "manuel", "doctor2");
+        }catch (InvalidPatientDoctorPairException e){
+            logger.info(e.getMessage());
+        }
+
+        try{
+            waitingRoomRepository.endCare(1, "mora", "doctor1");
+        }catch (InvalidPatientDoctorPairException e){
+            logger.info(e.getMessage());
+        }
+
+    };
+
+    private final Runnable test2 = () -> {
+        try{
+            waitingRoomRepository.addPatient("cris", 3);
+        }catch(PatientAlreadyExistsException e){
+            logger.info(e.getMessage());
+        }
+
+        try{
+            doctorRepository.addDoctor("doctor3", 4);
+        }catch(DoctorAlreadyExistsException e){
+            logger.info(e.getMessage());
+        }
+
+        waitingRoomRepository.startAllCare();
+
+        try{
+            doctorRepository.setDoctorStatus("doctor3", Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE);
+        }catch(DoctorIsAttendingException e){
+            logger.info(e.getMessage());
+        }
+
+        waitingRoomRepository.startAllCare();
+
+    };
 
     @BeforeEach
     public final void before() {
@@ -120,6 +226,21 @@ public class EmergencyCareServiceTest {
 
         waitingRoomRepository.endCare(2, "manuel", "doctor2");
     }
+
+
+    @Test
+    public final void multipleThreadTest() throws InterruptedException, ExecutionException{
+
+        ExecutorService pool = Executors.newCachedThreadPool();
+        pool.submit(test);
+        pool.submit(test);
+        pool.submit(test2);
+        pool.shutdown();
+        boolean response = pool.awaitTermination(50000, TimeUnit.SECONDS);
+        assertTrue(response);
+    }
+
+
 
 
 

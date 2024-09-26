@@ -12,6 +12,8 @@ import ar.edu.itba.pod.server.model.Doctor;
 import ar.edu.itba.pod.server.model.Patient;
 import ar.edu.itba.pod.server.model.Room;
 import emergencyRoom.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import java.util.*;
@@ -22,6 +24,8 @@ public class WaitingRoomRepository {
     private final ConcurrentSkipListSet<Patient>[] patientLevels;
 
     private final List<DischargedEntry> discharged;
+
+    private static final Logger logger = LoggerFactory.getLogger(DoctorRepository.class);
 
     private final RoomRepository rr;
     private final DoctorRepository dr;
@@ -59,6 +63,7 @@ public class WaitingRoomRepository {
         }
 
         patientLevels[level-1].add(patient);
+        logger.info("New patient {}", name);
     }
 
     public Patient findByName(String name){

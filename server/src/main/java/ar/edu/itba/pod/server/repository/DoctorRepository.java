@@ -4,6 +4,8 @@ import ar.edu.itba.pod.server.exception.DoctorAlreadyExistsException;
 import ar.edu.itba.pod.server.exception.DoctorNotFoundException;
 import ar.edu.itba.pod.server.model.Doctor;
 import emergencyRoom.Messages.DoctorStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,6 +17,8 @@ public class DoctorRepository {
 
     private final Map<String, Doctor> doctors;
 
+    private static final Logger logger = LoggerFactory.getLogger(DoctorRepository.class);
+
     public DoctorRepository(EventRepository er){
         doctors = new ConcurrentHashMap<>();
         this.er = er;
@@ -25,6 +29,7 @@ public class DoctorRepository {
         if(doctors.putIfAbsent(name, doctor) != null) {
             throw new DoctorAlreadyExistsException(name);
         }
+        logger.info("New Doctor {}", name);
     }
 
     public Doctor getDoctor(String name){
