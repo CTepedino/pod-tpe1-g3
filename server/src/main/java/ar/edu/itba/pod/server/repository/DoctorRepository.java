@@ -36,7 +36,7 @@ public class DoctorRepository {
     }
 
     public Doctor setDoctorStatus(String name, DoctorStatus status){
-        Doctor doctor = doctors.get(name);
+        Doctor doctor = getDoctor(name);
         doctor.setStatus(status);
         er.notifyDisponibility(doctor);
         return doctor;
