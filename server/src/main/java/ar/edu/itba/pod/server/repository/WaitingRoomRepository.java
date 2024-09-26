@@ -65,11 +65,14 @@ public class WaitingRoomRepository {
 
     public synchronized int getPatientsAhead(Patient patient){
         int ahead = 0;
+        boolean found = false;
         for (Patient p : patients){
             if (patient.equals(p)){
-                break;
+                found = true;
             }
-            if (patient.getLevel() <= p.getLevel()){
+            if (patient.getLevel() < p.getLevel()){
+                ahead++;
+        } else if (patient.getLevel() == p.getLevel() && !found){
                 ahead++;
             }
         }
