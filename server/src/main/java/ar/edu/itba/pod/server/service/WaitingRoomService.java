@@ -35,14 +35,17 @@ public class WaitingRoomService extends WaitingRoomServiceGrpc.WaitingRoomServic
 
     @Override
     public void checkPatient(StringValue request, StreamObserver<CheckPatientResponse> responseObserver) {
-        Patient patient = wr.findByName(request.getValue());
-        int ahead = wr.getPatientsAhead(patient);
-        CheckPatientResponse response = CheckPatientResponse.newBuilder()
-                .setPatient(patient.toPatientInfo())
-                .setWaitTime(ahead)
-                .build();
+        synchronized (wr) {
+            Patient patient = wr.findByName(request.getValue());
+            int ahead = wr.getPatientsAhead(patient);
 
-        responseObserver.onNext(response);
+            CheckPatientResponse response = CheckPatientResponse.newBuilder()
+                    .setPatient(patient.toPatientInfo())
+                    .setWaitTime(ahead)
+                    .build();
+
+            responseObserver.onNext(response);
+        }
         responseObserver.onCompleted();
     }
 }

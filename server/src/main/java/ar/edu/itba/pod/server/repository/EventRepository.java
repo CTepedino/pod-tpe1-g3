@@ -7,9 +7,9 @@ import ar.edu.itba.pod.server.exception.DoctorDidNotRegisterException;
 import ar.edu.itba.pod.server.model.Doctor;
 import ar.edu.itba.pod.server.model.Patient;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class EventRepository {
@@ -17,15 +17,16 @@ public class EventRepository {
     private final Map<Doctor, BlockingQueue<DoctorEvent>> events;
 
     public EventRepository(){
-        events = new ConcurrentHashMap<>();
+        events = new HashMap<>();
     }
 
     public BlockingQueue<DoctorEvent> subscribe(Doctor doctor){
-        if (events.containsKey(doctor)){
-            throw new DoctorAlreadyRegisteredException(doctor.getName());
-        }
         BlockingQueue<DoctorEvent> queue = new LinkedBlockingQueue<>();
-        events.put(doctor, queue);
+        synchronized (this) {
+            if (events.putIfAbsent(doctor, queue) != null) {
+                throw new DoctorAlreadyRegisteredException(doctor.getName());
+            }
+        }
         queue.add(DoctorEvent.newBuilder()
                 .setDoctor(doctor.toDoctorInfo())
                 .setEvent(Event.EVENT_REGISTER)
@@ -33,21 +34,19 @@ public class EventRepository {
         return queue;
     }
 
-    public void unsubscribe(Doctor doctor){
-        if (!events.containsKey(doctor)){
+    public synchronized void unsubscribe(Doctor doctor){
+        if (!events.containsKey(doctor)) {
             throw new DoctorDidNotRegisterException(doctor.getName());
         }
         events.get(doctor).add(DoctorEvent.newBuilder()
                 .setEvent(Event.EVENT_UNREGISTER)
                 .setDoctor(doctor.toDoctorInfo())
                 .build());
-    }
-
-    public void remove(Doctor doctor){
         events.remove(doctor);
     }
 
-    private void emitEvent(Doctor doctor, DoctorEvent event){
+
+    private synchronized void emitEvent(Doctor doctor, DoctorEvent event){
         BlockingQueue<DoctorEvent> queue = events.get(doctor);
         if (queue != null){
             try {

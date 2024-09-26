@@ -10,7 +10,7 @@ import emergencyRoom.Messages;
 
 public class Room {
 
-    private int number;
+    private final int number;
     private Patient patient;
     private Doctor doctor;
 
@@ -36,7 +36,7 @@ public class Room {
         return toReturn;
     }
 
-    public boolean isAvailable() {
+    public synchronized boolean isAvailable() {
         return patient == null && doctor == null;
     }
 

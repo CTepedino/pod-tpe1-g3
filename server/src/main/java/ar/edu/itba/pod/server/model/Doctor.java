@@ -10,33 +10,42 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Doctor extends Person{
 
     private DoctorStatus status;
+    private final ReentrantLock lock;
 
     private static final Logger logger = LoggerFactory.getLogger(DoctorRepository.class);
-
-
 
     public Doctor(String name, int maxLevel){
         super(name, maxLevel);
         status = DoctorStatus.DOCTOR_STATUS_UNAVAILABLE;
+        lock = new ReentrantLock();
     }
 
-    public synchronized void setStatus(DoctorStatus status){
+    public void setStatus(DoctorStatus status){
+        lock.lock();
         if (this.status == DoctorStatus.DOCTOR_STATUS_ATTENDING){
             throw new DoctorIsAttendingException(name);
         }
         this.status = status;
+        lock.unlock();
         logger.info("Doctor {} changed status to {}", name, status);
     }
 
     public void endCare(){
+        lock.lock();
         status = DoctorStatus.DOCTOR_STATUS_AVAILABLE;
+        lock.unlock();
     }
 
-    public synchronized DoctorStatus getStatus(){
+    public ReentrantLock getLock(){
+        return lock;
+    }
+
+    public DoctorStatus getStatus(){
         return status;
     }
 

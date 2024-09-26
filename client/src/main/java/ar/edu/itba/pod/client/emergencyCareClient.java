@@ -116,7 +116,7 @@ public class emergencyCareClient {
 
         try {
             CarePatientResponse response = blockingStub.dischargePatient(request);
-            System.out.printf("Patient %s (%d) has been discharged from Doctor %s (%d) and the Room #%d is now Free", response.getPatient().getName(), response.getPatient().getLevel(), response.getDoctor().getName(), response.getDoctor().getMaxLevel(), room);
+            System.out.printf("Patient %s (%d) has been discharged from Doctor %s (%d) and the Room #%d is now Free\n", response.getPatient().getName(), response.getPatient().getLevel(), response.getDoctor().getName(), response.getDoctor().getMaxLevel(), room);
         } catch (StatusRuntimeException e){
             System.out.println(e.getMessage());
         }

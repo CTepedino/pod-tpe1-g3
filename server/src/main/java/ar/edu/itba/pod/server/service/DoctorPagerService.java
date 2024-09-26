@@ -46,7 +46,6 @@ public class DoctorPagerService extends DoctorPagerServiceGrpc.DoctorPagerServic
                 Thread.currentThread().interrupt();
             }
         }
-        er.remove(doctor);
         responseObserver.onCompleted();
     }
 
