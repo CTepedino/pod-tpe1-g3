@@ -40,6 +40,14 @@ public class emergencyCareClient {
         }
     }
 
+    private static void printResponse(CarePatientResponse response) {
+        if(response.getStatus() == RoomUpdateStatus.ROOM_STATUS_OK){
+            System.out.printf("Patient %s (%d) and Doctor %s (%d) are now in Room #%d\n", response.getPatient().getName(), response.getPatient().getLevel(), response.getDoctor().getName(), response.getDoctor().getMaxLevel(), response.getRoom());
+        } else {
+            System.out.printf("Room #%d remains %s\n", response.getRoom(), response.getStatus() == RoomUpdateStatus.ROOM_STATUS_STILL_FREE ? "Free" : "Occupied");
+        }
+    }
+
     private static void carePatient(){
         String roomString = System.getProperty("room");
         if(roomString == null){
@@ -51,7 +59,7 @@ public class emergencyCareClient {
 
         try {
             CarePatientResponse response = blockingStub.carePatient(UInt32Value.of(room));
-            System.out.printf("Patient %s (%d) and Doctor %s (%d) are now in Room #%d\n", response.getPatient().getName(), response.getPatient().getLevel(), response.getDoctor().getName(), response.getDoctor().getMaxLevel(), room);
+            printResponse(response);
         } catch (StatusRuntimeException e){
             System.out.println(e.getMessage());
         }
@@ -61,11 +69,7 @@ public class emergencyCareClient {
         try {
             CareAllPatientsResponse responseList = blockingStub.careAllPatients(com.google.protobuf.Empty.newBuilder().build());
             for(CarePatientResponse response : responseList.getRoomsList()){
-                if(response.getStatus() == RoomUpdateStatus.ROOM_STATUS_OK){
-                    System.out.printf("Patient %s (%d) and Doctor %s (%d) are now in Room #%d\n", response.getPatient().getName(), response.getPatient().getLevel(), response.getDoctor().getName(), response.getDoctor().getMaxLevel(), response.getRoom());
-                } else {
-                    System.out.printf("Room #%d remains %s\n", response.getRoom(), response.getStatus() == RoomUpdateStatus.ROOM_STATUS_STILL_FREE ? "Free" : "Occupied");
-                }
+                printResponse(response);
             }
         } catch (StatusRuntimeException e){
             System.out.println(e.getMessage());

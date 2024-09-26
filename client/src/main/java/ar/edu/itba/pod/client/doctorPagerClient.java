@@ -10,6 +10,8 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
+import java.util.concurrent.CountDownLatch;
+
 public class doctorPagerClient {
     private static DoctorPagerServiceGrpc.DoctorPagerServiceBlockingStub blockingStub;
     private static DoctorPagerServiceGrpc.DoctorPagerServiceStub stub;
@@ -50,6 +52,8 @@ public class doctorPagerClient {
             return;
         }
 
+        CountDownLatch latch = new CountDownLatch(1);
+
         StreamObserver<DoctorEvent> observer = new StreamObserver<DoctorEvent>() {
             @Override
             public void onNext(DoctorEvent event) {
@@ -79,13 +83,21 @@ public class doctorPagerClient {
             @Override
             public void onError(Throwable t) {
                 System.out.println(t.getMessage());
+                latch.countDown();
             }
 
             @Override
-            public void onCompleted() {}
+            public void onCompleted() {
+                latch.countDown();
+            }
         };
 
         stub.register(StringValue.of(doctorName), observer);
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private static void unregister(){
