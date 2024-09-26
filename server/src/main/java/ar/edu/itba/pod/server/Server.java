@@ -1,11 +1,10 @@
 package ar.edu.itba.pod.server;
 
 import ar.edu.itba.pod.server.repository.DoctorRepository;
+import ar.edu.itba.pod.server.repository.EventRepository;
 import ar.edu.itba.pod.server.repository.RoomRepository;
 import ar.edu.itba.pod.server.repository.WaitingRoomRepository;
-import ar.edu.itba.pod.server.service.AdministrationService;
-import ar.edu.itba.pod.server.service.EmergencyCareService;
-import ar.edu.itba.pod.server.service.WaitingRoomService;
+import ar.edu.itba.pod.server.service.*;
 import io.grpc.BindableService;
 import io.grpc.ServerBuilder;
 import io.grpc.ServerInterceptors;
@@ -28,14 +27,17 @@ public class Server {
 
         int port = 50051;
 
-        DoctorRepository dr = new DoctorRepository();
+        EventRepository er = new EventRepository();
+        DoctorRepository dr = new DoctorRepository(er);
         RoomRepository rr = new RoomRepository();
-        WaitingRoomRepository wr = new WaitingRoomRepository(rr, dr);
+        WaitingRoomRepository wr = new WaitingRoomRepository(rr, dr, er);
 
         io.grpc.Server server = ServerBuilder.forPort(port)
                 .addService(exceptionHandler.apply(new AdministrationService(dr, rr)))
                 .addService(exceptionHandler.apply(new WaitingRoomService(wr)))
                 .addService(exceptionHandler.apply(new EmergencyCareService(wr)))
+                .addService(exceptionHandler.apply(new DoctorPagerService(er, dr)))
+                .addService(exceptionHandler.apply(new QueryService(rr, wr)))
                 .build();
         server.start();
 

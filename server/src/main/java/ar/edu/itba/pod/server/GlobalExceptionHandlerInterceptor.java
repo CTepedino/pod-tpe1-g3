@@ -40,6 +40,8 @@ public class GlobalExceptionHandlerInterceptor implements ServerInterceptor {
 
         private final Map<Class<? extends Throwable>, Code> errorCodesByException = Map.ofEntries(
                 Map.entry(DoctorAlreadyExistsException.class, Code.ALREADY_EXISTS),
+                Map.entry(DoctorAlreadyRegisteredException.class, Code.ALREADY_EXISTS),
+                Map.entry(DoctorDidNotRegisterException.class, Code.NOT_FOUND),
                 Map.entry(DoctorIsAttendingException.class, Code.FAILED_PRECONDITION),
                 Map.entry(DoctorNotFoundException.class, Code.NOT_FOUND),
                 Map.entry(InvalidEmergencyLevelException.class, Code.INVALID_ARGUMENT),
