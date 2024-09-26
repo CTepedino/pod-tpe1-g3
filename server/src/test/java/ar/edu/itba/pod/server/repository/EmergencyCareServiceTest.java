@@ -229,7 +229,7 @@ public class EmergencyCareServiceTest {
 
 
     @Test
-    public final void doctorAvailability() throws InterruptedException, ExecutionException{
+    public final void multipleThreadTest() throws InterruptedException, ExecutionException{
 
         ExecutorService pool = Executors.newCachedThreadPool();
         pool.submit(test);
