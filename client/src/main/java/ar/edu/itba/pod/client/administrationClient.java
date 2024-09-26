@@ -108,7 +108,7 @@ public class administrationClient {
 
         try {
             DoctorStatusResponse response = blockingStub.setDoctor(request);
-            System.out.printf("Doctor %s (%d) is %s\n", doctor, response.getDoctor().getMaxLevel(), availability);
+            System.out.printf("Doctor %s (%d) is %s\n", doctor, response.getDoctor().getMaxLevel(), status == Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE ? "Available" : "Unavailable");
         } catch (StatusRuntimeException e){
             System.out.println(e.getMessage());
         }
