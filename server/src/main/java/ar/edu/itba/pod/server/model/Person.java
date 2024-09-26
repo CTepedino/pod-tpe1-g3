@@ -30,12 +30,6 @@ public abstract class Person {
         return level;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(name);
-    }
-
-
     public static int getMaxLevel(){
         return MAX_LEVEL;
     }

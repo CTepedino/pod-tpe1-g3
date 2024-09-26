@@ -46,6 +46,11 @@ public class Doctor extends Person{
         return name.equals(doctor.name);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name);
+    }
+
     public Messages.DoctorInfo toDoctorInfo(){
         return Messages.DoctorInfo.newBuilder()
                 .setName(name)

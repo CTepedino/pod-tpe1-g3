@@ -4,6 +4,7 @@ package ar.edu.itba.pod.server.model;
 import emergencyRoom.Messages;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Patient extends Person implements Comparable<Patient>{
 
@@ -19,6 +20,11 @@ public class Patient extends Person implements Comparable<Patient>{
         if (this == o) return true;
         if (!(o instanceof Patient patient)) return false;
         return name.equals(patient.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name);
     }
 
     public Messages.PatientInfo toPatientInfo(){
