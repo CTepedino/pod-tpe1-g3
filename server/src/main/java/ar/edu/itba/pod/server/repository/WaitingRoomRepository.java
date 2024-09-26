@@ -83,10 +83,10 @@ public class WaitingRoomRepository {
 
     public synchronized int getPatientsAhead(Patient patient){
         int ahead = 0;
-        for (int i = patientLevels.length -1; i >= patient.getLevel(); i--){
+        for (int i = patientLevels.length -1; i >= patient.getLevel() -1; i--){
             for (Patient p : patientLevels[i]){
                 if (p.equals(patient)){
-                    break;
+                    return ahead;
                 } else {
                     ahead++;
                 }
