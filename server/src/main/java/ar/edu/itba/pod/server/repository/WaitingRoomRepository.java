@@ -46,7 +46,11 @@ public class WaitingRoomRepository {
                 throw new PatientAlreadyExistsException(name);
             }
         }
-        //TODO: revisar que no este siendo atendido en ninguna sala
+
+        if (rr.hasPatient(patient)){
+            throw new PatientAlreadyExistsException(name);
+        }
+
         patients.add(patient);
     }
 
