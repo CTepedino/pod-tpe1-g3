@@ -28,7 +28,7 @@ public class Room {
         DischargedEntry toReturn = new DischargedEntry(number, patient, doctor);
         if (isAvailable() && patientName.equals(patient.getName()) && doctorName.equals(doctor.getName())){
             patient = null;
-            doctor.setStatus(Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE);
+            doctor.endCare();
             doctor = null;
         } else {
             throw new InvalidPatientDoctorPairException();

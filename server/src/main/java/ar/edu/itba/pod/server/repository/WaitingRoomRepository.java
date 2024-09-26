@@ -16,6 +16,7 @@ import emergencyRoom.Messages;
 
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WaitingRoomRepository {
 
@@ -170,7 +171,7 @@ public class WaitingRoomRepository {
         }
 
         List<Messages.PatientInfo> info = new ArrayList<>();
-        for (Patient p: patients){
+        for (Patient p: patients.stream().sorted().toList()){
             info.add(p.toPatientInfo());
         }
         return info;

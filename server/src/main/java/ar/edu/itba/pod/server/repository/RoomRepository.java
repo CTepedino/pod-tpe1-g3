@@ -31,7 +31,7 @@ public class RoomRepository {
         return rooms.get(roomNumber-1);
     }
 
-    public int getRoomCount(){
+    int getRoomCount(){
         return rooms.size();
     }
 
@@ -48,7 +48,7 @@ public class RoomRepository {
     }
 
 
-    public synchronized boolean hasPatient(Patient patient){
+    synchronized boolean hasPatient(Patient patient){
         if (patient == null){
             return false;
         }

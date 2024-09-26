@@ -3,7 +3,7 @@ package ar.edu.itba.pod.server.model;
 
 import emergencyRoom.Messages;
 
-public class Patient extends Person {
+public class Patient extends Person implements Comparable<Person>{
 
     public Patient(String name, int level){
         super(name, level);
@@ -23,4 +23,11 @@ public class Patient extends Person {
                 .build();
     }
 
+    @Override
+    public int compareTo(Person o) {
+        if (level == o.level){
+            return name.compareTo(o.name);
+        }
+        return level > o.level? 1: -1;
+    }
 }
