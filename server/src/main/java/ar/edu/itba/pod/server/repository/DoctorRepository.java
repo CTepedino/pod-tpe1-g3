@@ -1,13 +1,18 @@
 package ar.edu.itba.pod.server.repository;
 
+import ar.edu.itba.pod.server.Server;
 import ar.edu.itba.pod.server.exception.DoctorAlreadyExistsException;
+import ar.edu.itba.pod.server.exception.DoctorIsAttendingException;
 import ar.edu.itba.pod.server.exception.DoctorNotFoundException;
 import ar.edu.itba.pod.server.model.Doctor;
 import emergencyRoom.Messages.DoctorStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 
 public class DoctorRepository {
 
@@ -38,10 +43,10 @@ public class DoctorRepository {
     public Doctor setDoctorStatus(String name, DoctorStatus status){
         Doctor doctor = doctors.get(name);
         doctor.setStatus(status);
-
         er.notifyDisponibility(doctor);
         return doctor;
     }
+
 
     Doctor getDoctorForCare(int level){
         Doctor candidate = null;
@@ -60,6 +65,5 @@ public class DoctorRepository {
 
         return candidate;
     }
-
 
 }
