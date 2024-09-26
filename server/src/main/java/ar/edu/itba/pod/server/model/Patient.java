@@ -30,6 +30,9 @@ public class Patient extends Person implements Comparable<Patient>{
 
     @Override
     public int compareTo(Patient o) {
+        if (name.equals(o.name)){
+            return 0;
+        }
         if (level == o.level){
             return arrivalTime.compareTo(o.arrivalTime);
         }
