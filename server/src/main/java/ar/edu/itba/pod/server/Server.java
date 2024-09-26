@@ -30,7 +30,8 @@ public class Server {
         try {
             port = portStr != null ? Integer.parseInt(portStr) : 50051;
         } catch (NumberFormatException e){
-            port = 50051;
+            logger.error("Invalid port: {}", portStr);
+            return;
         }
 
         EventRepository er = new EventRepository();

@@ -26,7 +26,11 @@ Para iniciar el servidor, ejecutar el siguiente comando:
 ./run-server.sh
 ```
 
-El servidor estara escuchando en el puerto 50051.
+Por defecto, el servidor estara escuchando en el puerto 50051. Para cambiarlo, se puede usar el argumento
+
+```bash
+-DserverPort={port}
+```
 
 ### Clientes
 
@@ -54,6 +58,43 @@ Para ejecutar un cliente, ejecutar el comando asociado al respectivo cliente:
 
 En todos los casos, se deberan utilizar los siguientes argumentos:
 
+- Para indicar la dirección y puerto del servidor:
 ```bash
--DserverAddress={:port}
+-DserverAddress={address:port}
+```
+- Para indicar la acción a realizar en el cliente: 
+```bash
+-Daction={action}
+```
+
+Ademas, según la acción a realizar, se podrian requerir los siguientes paramentros:
+
+- Para indicar un doctor
+```bash
+-Ddoctor={name}
+```
+
+- Para indicar el nivel de un paciente o de un doctor:
+```bash
+-Dlevel={level}
+```
+
+- Para indicar la disponibilidad de un doctor: 
+```bash
+-Davailability={available|unavailable}
+```
+
+- Para indicar un paciente:
+```bash
+-Dpatient={name}
+```
+
+- Para indicar un consultorio:
+```bash
+-Droom={number}
+```
+
+- Para indicar el path del archivo de salida:
+```bash
+-DoutPath={path}
 ```
