@@ -46,6 +46,7 @@ public class WaitingRoomRepository {
                 throw new PatientAlreadyExistsException(name);
             }
         }
+        //TODO: revisar que no este siendo atendido en ninguna sala
         patients.add(patient);
     }
 
@@ -72,7 +73,7 @@ public class WaitingRoomRepository {
             }
             if (patient.getLevel() < p.getLevel()){
                 ahead++;
-        } else if (patient.getLevel() == p.getLevel() && !found){
+            } else if (patient.getLevel() == p.getLevel() && !found){
                 ahead++;
             }
         }

@@ -12,7 +12,7 @@ enum DoctorStatus {
   DOCTOR_STATUS_UNAVAILABLE = 1;
   DOCTOR_STATUS_AVAILABLE = 2;
   DOCTOR_STATUS_ATTENDING = 3;
-} //TODO: creo que esto va a haber que separarlo en 2 enums, porque si no se podria pasar a attending un doctor con SetDoctor
+}
 
 message DoctorInfo {
   string name = 1;

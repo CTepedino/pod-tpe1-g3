@@ -26,7 +26,7 @@ public class Room {
 
     public synchronized DischargedEntry endCare(String patientName, String doctorName){
         DischargedEntry toReturn = new DischargedEntry(number, patient, doctor);
-        if (patientName.equals(this.patient.getName()) && doctorName.equals(doctor.getName())){
+        if (isAvailable() && patientName.equals(patient.getName()) && doctorName.equals(doctor.getName())){
             patient = null;
             doctor.setStatus(Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE);
             doctor = null;
