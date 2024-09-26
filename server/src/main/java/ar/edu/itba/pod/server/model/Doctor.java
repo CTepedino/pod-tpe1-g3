@@ -21,6 +21,7 @@ public class Doctor extends Person{
 
     public Doctor(String name, int maxLevel){
         super(name, maxLevel);
+        status = DoctorStatus.DOCTOR_STATUS_UNAVAILABLE;
     }
 
     public synchronized void setStatus(DoctorStatus status){
