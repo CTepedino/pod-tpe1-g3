@@ -48,13 +48,15 @@ public class RoomRepository {
     }
 
 
-    synchronized boolean hasPatient(Patient patient){
+    boolean hasPatient(Patient patient){
         if (patient == null){
             return false;
         }
         for (Room r: rooms){
-            if (patient.equals(r.getPatient())){
-                return true;
+            synchronized (r) {
+                if (patient.equals(r.getPatient())) {
+                    return true;
+                }
             }
         }
         return false;

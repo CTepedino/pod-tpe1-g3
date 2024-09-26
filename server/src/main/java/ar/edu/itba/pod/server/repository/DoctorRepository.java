@@ -1,14 +1,9 @@
 package ar.edu.itba.pod.server.repository;
 
-import ar.edu.itba.pod.server.Server;
 import ar.edu.itba.pod.server.exception.DoctorAlreadyExistsException;
-import ar.edu.itba.pod.server.exception.DoctorIsAttendingException;
 import ar.edu.itba.pod.server.exception.DoctorNotFoundException;
 import ar.edu.itba.pod.server.model.Doctor;
 import emergencyRoom.Messages.DoctorStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,14 +47,18 @@ public class DoctorRepository {
         Doctor candidate = null;
 
         for (Doctor doctor : doctors.values()){
-            if (doctor.getLevel() >= level && doctor.getStatus().equals(DoctorStatus.DOCTOR_STATUS_AVAILABLE)){
-                if (candidate == null){
+            doctor.getLock().lock();
+            if (doctor.getLevel() >= level && doctor.getStatus().equals(DoctorStatus.DOCTOR_STATUS_AVAILABLE)) {
+                if (candidate == null) {
                     candidate = doctor;
-                } else if (doctor.getLevel() < candidate.getLevel()){
+                } else if (doctor.getLevel() < candidate.getLevel()) {
                     candidate = doctor;
-                } else if (doctor.getLevel() == candidate.getLevel() && doctor.getName().compareToIgnoreCase(candidate.getName()) < 0){
+                } else if (doctor.getLevel() == candidate.getLevel() && doctor.getName().compareToIgnoreCase(candidate.getName()) < 0) {
                     candidate = doctor;
                 }
+            }
+            if (!doctor.equals(candidate)){
+                doctor.getLock().unlock();
             }
         }
 
