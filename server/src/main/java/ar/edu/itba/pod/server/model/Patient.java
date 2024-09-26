@@ -10,6 +10,7 @@ public class Patient extends Person implements Comparable<Patient>{
 
     private final LocalDateTime arrivalTime;
 
+
     public Patient(String name, int level){
         super(name, level);
         arrivalTime = LocalDateTime.now();

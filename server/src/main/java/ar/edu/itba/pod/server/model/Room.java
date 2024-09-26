@@ -6,13 +6,19 @@ import ar.edu.itba.pod.grpc.query.RoomInfo;
 import ar.edu.itba.pod.grpc.query.RoomInfoOrBuilder;
 import ar.edu.itba.pod.grpc.query.RoomStatus;
 import ar.edu.itba.pod.server.exception.InvalidPatientDoctorPairException;
+import ar.edu.itba.pod.server.repository.DoctorRepository;
+import ar.edu.itba.pod.server.repository.WaitingRoomRepository;
 import emergencyRoom.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Room {
 
     private final int number;
     private Patient patient;
     private Doctor doctor;
+
+    private static final Logger logger = LoggerFactory.getLogger(WaitingRoomRepository.class);
 
     public Room(int number){
         this.number = number;
@@ -22,6 +28,7 @@ public class Room {
         this.patient = patient;
         this.doctor = doctor;
         doctor.setStatus(Messages.DoctorStatus.DOCTOR_STATUS_ATTENDING);
+        logger.info("Doctor {} attending {} in room {}", doctor.getName(), patient.getName(), number);
     }
 
     public synchronized DischargedEntry endCare(String patientName, String doctorName){
@@ -30,6 +37,7 @@ public class Room {
             patient = null;
             doctor.endCare();
             doctor = null;
+            logger.info("Doctor {} finished with {} in room {}", doctorName, patientName, number);
         } else {
             throw new InvalidPatientDoctorPairException();
         }
