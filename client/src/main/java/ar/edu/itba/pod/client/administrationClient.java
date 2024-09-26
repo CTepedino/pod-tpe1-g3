@@ -26,8 +26,14 @@ public class administrationClient {
             return;
         }
 
-        ManagedChannel channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
-        blockingStub = AdministrationServiceGrpc.newBlockingStub(channel);
+        ManagedChannel channel = null;
+        try {
+            channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
+            blockingStub = AdministrationServiceGrpc.newBlockingStub(channel);
+        } catch (Exception e) {
+            System.out.println("Failed to connect to the server at " + address + ". Please check the server address and try again.");
+            return;
+        }
 
         switch(action){
             case "addRoom":
@@ -68,7 +74,13 @@ public class administrationClient {
             return;
         }
 
-        int level = Integer.parseInt(levelString);
+        int level;
+        try {
+            level = Integer.parseInt(levelString);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid level. Please provide a valid integer for the level.");
+            return;
+        }
         Messages.DoctorInfo doctorInfo = Messages.DoctorInfo.newBuilder().setName(doctor).setMaxLevel(level).build();
 
         try {
@@ -108,7 +120,7 @@ public class administrationClient {
 
         try {
             DoctorStatusResponse response = blockingStub.setDoctor(request);
-            System.out.printf("Doctor %s (%d) is %s\n", doctor, response.getDoctor().getMaxLevel(), availability);
+            System.out.printf("Doctor %s (%d) is %s\n", doctor, response.getDoctor().getMaxLevel(), status == Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE ? "Available" : "Unavailable");
         } catch (StatusRuntimeException e){
             System.out.println(e.getMessage());
         }

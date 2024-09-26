@@ -22,8 +22,14 @@ public class emergencyCareClient {
             return;
         }
 
-        ManagedChannel channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
-        blockingStub = EmergencyRoomServiceGrpc.newBlockingStub(channel);
+        ManagedChannel channel = null;
+        try {
+            channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
+            blockingStub = EmergencyRoomServiceGrpc.newBlockingStub(channel);
+        } catch (Exception e) {
+            System.out.println("Failed to connect to the server at " + address + ". Please check the server address and try again.");
+            return;
+        }
 
         switch(action){
             case "carePatient":
@@ -55,7 +61,13 @@ public class emergencyCareClient {
             return;
         }
 
-        int room = Integer.parseInt(roomString);
+        int room;
+        try {
+            room = Integer.parseInt(roomString);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid room number. Please provide a valid integer for the room number.");
+            return;
+        }
 
         try {
             CarePatientResponse response = blockingStub.carePatient(UInt32Value.of(room));
@@ -93,7 +105,13 @@ public class emergencyCareClient {
             return;
         }
 
-        int room = Integer.parseInt(roomString);
+        int room;
+        try {
+            room = Integer.parseInt(roomString);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid room number. Please provide a valid integer for the room number.");
+            return;
+        }
         DischargePatientRequest request = DischargePatientRequest.newBuilder().setRoom(room).setDoctorName(doctorName).setPatientName(patientName).build();
 
         try {

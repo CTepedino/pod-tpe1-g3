@@ -1,5 +1,6 @@
 package ar.edu.itba.pod.client;
 
+import ar.edu.itba.pod.grpc.administration.AdministrationServiceGrpc;
 import ar.edu.itba.pod.grpc.waitingRoom.CheckPatientResponse;
 import ar.edu.itba.pod.grpc.waitingRoom.WaitingRoomServiceGrpc;
 import com.google.protobuf.StringValue;
@@ -24,8 +25,14 @@ public class waitingRoomClient {
             return;
         }
 
-        ManagedChannel channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
-        blockingStub = WaitingRoomServiceGrpc.newBlockingStub(channel);
+        ManagedChannel channel = null;
+        try {
+            channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
+            blockingStub = WaitingRoomServiceGrpc.newBlockingStub(channel);
+        } catch (Exception e) {
+            System.out.println("Failed to connect to the server at " + address + ". Please check the server address and try again.");
+            return;
+        }
 
         switch(action){
             case "addPatient":
@@ -54,7 +61,13 @@ public class waitingRoomClient {
             return;
         }
 
-        int level = Integer.parseInt(levelString);
+        int level;
+        try {
+            level = Integer.parseInt(levelString);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid level. Please provide a valid integer for the level.");
+            return;
+        }
         Messages.PatientInfo patient = Messages.PatientInfo.newBuilder().setName(patientName).setLevel(level).build();
 
         try {
@@ -77,7 +90,13 @@ public class waitingRoomClient {
             return;
         }
 
-        int level = Integer.parseInt(levelString);
+        int level;
+        try {
+            level = Integer.parseInt(levelString);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid level. Please provide a valid integer for the level.");
+            return;
+        }
         Messages.PatientInfo patient = Messages.PatientInfo.newBuilder().setName(patientName).setLevel(level).build();
 
         try {
