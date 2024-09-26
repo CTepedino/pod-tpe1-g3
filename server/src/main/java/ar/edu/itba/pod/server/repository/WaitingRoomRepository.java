@@ -1,6 +1,5 @@
 package ar.edu.itba.pod.server.repository;
 
-import ar.edu.itba.pod.grpc.doctorPager.Event;
 import ar.edu.itba.pod.grpc.emergencyCare.CarePatientResponse;
 import ar.edu.itba.pod.grpc.emergencyCare.RoomUpdateStatus;
 import ar.edu.itba.pod.grpc.query.CaredInfo;
@@ -16,11 +15,12 @@ import emergencyRoom.Messages;
 
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class WaitingRoomRepository {
 
-    private final List<Patient> patients;
+    private final ConcurrentSkipListSet<Patient>[] patientLevels;
+
     private final List<DischargedEntry> discharged;
 
     private final RoomRepository rr;
@@ -31,17 +31,17 @@ public class WaitingRoomRepository {
         this.rr = rr;
         this.dr = dr;
         this.er = er;
-        patients = new ArrayList<>();
+
+        patientLevels = new ConcurrentSkipListSet[Patient.getMaxLevel()];
+        for (int i = 0; i < patientLevels.length; i++){
+            patientLevels[i] = new ConcurrentSkipListSet<Patient>();
+        }
         discharged = new ArrayList<>();
     }
 
     public synchronized void addPatient(String name, int level){
         Patient patient = new Patient(name, level);
-        for (Patient p : patients){
-            if (p.equals(patient)){
-                throw new PatientAlreadyExistsException(name);
-            }
-        }
+
         for (DischargedEntry entry : discharged){
             if (entry.getPatient().equals(patient)){
                 throw new PatientAlreadyExistsException(name);
@@ -52,36 +52,47 @@ public class WaitingRoomRepository {
             throw new PatientAlreadyExistsException(name);
         }
 
-        patients.add(patient);
+        for (ConcurrentSkipListSet<Patient> patients : patientLevels) {
+            if (patients.contains(patient)) {
+                throw new PatientAlreadyExistsException(name);
+            }
+        }
+
+        patientLevels[level-1].add(patient);
     }
 
     public synchronized Patient findByName(String name){
-        for (Patient p : patients){
-            if (p.getName().equals(name)){
-                return p;
+        for (ConcurrentSkipListSet<Patient> patients : patientLevels){
+            for (Patient p : patients){
+                if (p.getName().equals(name)){
+                    return p;
+                }
             }
         }
+
         throw new PatientNotFoundException(name);
     }
 
     public synchronized void updateLevel(String name, int level){
         Patient patient = findByName(name);
+        int oldLevel = patient.getLevel();
         patient.setLevel(level);
+        patientLevels[oldLevel-1].remove(patient);
+        patientLevels[level-1].add(patient);
     }
 
     public synchronized int getPatientsAhead(Patient patient){
         int ahead = 0;
-        boolean found = false;
-        for (Patient p : patients){
-            if (patient.equals(p)){
-                found = true;
-            }
-            if (patient.getLevel() < p.getLevel()){
-                ahead++;
-            } else if (patient.getLevel() == p.getLevel() && !found){
-                ahead++;
+        for (int i = patientLevels.length -1; i >= patient.getLevel(); i--){
+            for (Patient p : patientLevels[i]){
+                if (p.equals(patient)){
+                    break;
+                } else {
+                    ahead++;
+                }
             }
         }
+
         return ahead;
     }
 
@@ -90,10 +101,6 @@ public class WaitingRoomRepository {
 
         if (!room.isAvailable()){
             return careResponseErrorBuilder(roomNumber, RoomUpdateStatus.ROOM_STATUS_WAS_OCCUPIED);
-        }
-
-        if (patients.isEmpty()){
-            return careResponseErrorBuilder(roomNumber, RoomUpdateStatus.ROOM_STATUS_STILL_FREE);
         }
 
         Doctor doctor = null;
@@ -105,28 +112,27 @@ public class WaitingRoomRepository {
                 return careResponseErrorBuilder(roomNumber, RoomUpdateStatus.ROOM_STATUS_STILL_FREE);
             }
             patient = getPatientForCare(maxLevel);
+            if (patient == null){
+                return careResponseErrorBuilder(roomNumber, RoomUpdateStatus.ROOM_STATUS_STILL_FREE);
+            }
             doctor = dr.getDoctorForCare(patient.getLevel());
             maxLevel = patient.getLevel() -1;
         }
 
         room.startCare(patient, doctor);
-        patients.remove(patient);
+        patientLevels[patient.getLevel()-1].remove(patient);
 
         er.notifyCareStart(doctor, patient, roomNumber);
         return careResponseBuilder(roomNumber, patient, doctor);
     }
 
-    private Patient getPatientForCare(int maxLevel){
-        Patient candidate = patients.get(0);
-        for (Patient p : patients){
-            if (candidate.getLevel() == maxLevel){
-                break;
-            }
-            if (p.getLevel() > candidate.getLevel() && p.getLevel() < maxLevel){
-                candidate = p;
+    private synchronized Patient getPatientForCare(int maxLevel){
+        for (int i = maxLevel -1 ; i >=0 ; i--){
+            if (!patientLevels[i].isEmpty()){
+                return patientLevels[i].first();
             }
         }
-        return candidate;
+        return null;
     }
 
     public synchronized List<CarePatientResponse> startAllCare(){
@@ -166,13 +172,16 @@ public class WaitingRoomRepository {
 
 
     public List<Messages.PatientInfo> queryWaitingRoom(){
-        if (patients.isEmpty()){
+
+        if (getWaitingPatientsCount() == 0){
             throw new NoPatientsInWaitRoomException();
         }
 
         List<Messages.PatientInfo> info = new ArrayList<>();
-        for (Patient p: patients.stream().sorted().toList()){
-            info.add(p.toPatientInfo());
+        for (int i = patientLevels.length -1; i >=0 ; i--){
+            for (Patient p : patientLevels[i]){
+                info.add(p.toPatientInfo());
+            }
         }
         return info;
     }
@@ -198,5 +207,13 @@ public class WaitingRoomRepository {
             }
         }
         return info;
+    }
+
+    private synchronized int getWaitingPatientsCount(){
+        int count = 0;
+        for (ConcurrentSkipListSet<Patient> patients : patientLevels){
+            count += patients.size();
+        }
+        return count;
     }
 }
