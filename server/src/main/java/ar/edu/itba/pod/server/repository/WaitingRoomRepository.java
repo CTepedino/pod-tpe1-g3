@@ -1,5 +1,6 @@
 package ar.edu.itba.pod.server.repository;
 
+import ar.edu.itba.pod.grpc.doctorPager.Event;
 import ar.edu.itba.pod.grpc.emergencyCare.CarePatientResponse;
 import ar.edu.itba.pod.grpc.emergencyCare.RoomUpdateStatus;
 import ar.edu.itba.pod.grpc.query.CaredInfo;
@@ -23,10 +24,12 @@ public class WaitingRoomRepository {
 
     private final RoomRepository rr;
     private final DoctorRepository dr;
+    private final EventRepository er;
 
-    public WaitingRoomRepository(RoomRepository rr, DoctorRepository dr){
+    public WaitingRoomRepository(RoomRepository rr, DoctorRepository dr, EventRepository er){
         this.rr = rr;
         this.dr = dr;
+        this.er = er;
         patients = new ArrayList<>();
         discharged = new ArrayList<>();
     }
@@ -103,6 +106,7 @@ public class WaitingRoomRepository {
         room.startCare(patient, doctor);
         patients.remove(patient);
 
+        er.notifyCareStart(doctor, patient, roomNumber);
         return careResponseBuilder(roomNumber, patient, doctor);
     }
 
@@ -132,6 +136,7 @@ public class WaitingRoomRepository {
         DischargedEntry dischargedEntry = rr.getRoom(room).endCare(patientName, doctorName);
         discharged.add(dischargedEntry);
 
+        er.notifyCareEnd(dischargedEntry.getDoctor(), dischargedEntry.getPatient(), room);
         return careResponseBuilder(room, dischargedEntry.getPatient(), dischargedEntry.getDoctor());
     }
 

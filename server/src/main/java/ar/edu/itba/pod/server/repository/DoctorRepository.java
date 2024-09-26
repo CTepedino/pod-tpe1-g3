@@ -11,10 +11,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DoctorRepository {
 
+    private final EventRepository er;
+
     private final Map<String, Doctor> doctors;
 
-    public DoctorRepository(){
+    public DoctorRepository(EventRepository er){
         doctors = new ConcurrentHashMap<>();
+        this.er = er;
     }
 
     public void addDoctor(String name, int maxLevel){
@@ -35,6 +38,8 @@ public class DoctorRepository {
     public Doctor setDoctorStatus(String name, DoctorStatus status){
         Doctor doctor = doctors.get(name);
         doctor.setStatus(status);
+
+        er.notifyDisponibility(doctor);
         return doctor;
     }
 
