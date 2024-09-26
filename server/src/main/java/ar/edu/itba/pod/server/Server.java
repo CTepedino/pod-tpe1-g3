@@ -25,7 +25,13 @@ public class Server {
     public static void main(String[] args) throws InterruptedException, IOException {
         logger.info("Emergency Room Server Starting ...");
 
-        int port = 50051;
+        String portStr = System.getProperty("serverPort");
+        int port;
+        try {
+            port = portStr != null ? Integer.parseInt(portStr) : 50051;
+        } catch (NumberFormatException e){
+            port = 50051;
+        }
 
         EventRepository er = new EventRepository();
         DoctorRepository dr = new DoctorRepository(er);
