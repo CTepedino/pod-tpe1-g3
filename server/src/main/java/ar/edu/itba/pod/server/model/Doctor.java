@@ -31,8 +31,8 @@ public class Doctor extends Person{
             throw new DoctorIsAttendingException(name);
         }
         this.status = status;
-        lock.unlock();
         logger.info("Doctor {} changed status to {}", name, status);
+        lock.unlock();
     }
 
     public void endCare(){
