@@ -1,15 +1,23 @@
 package ar.edu.itba.pod.server.repository;
 
+import ar.edu.itba.pod.server.Server;
 import ar.edu.itba.pod.server.exception.DoctorAlreadyExistsException;
+import ar.edu.itba.pod.server.exception.DoctorIsAttendingException;
 import ar.edu.itba.pod.server.exception.DoctorNotFoundException;
 import ar.edu.itba.pod.server.model.Doctor;
 import emergencyRoom.Messages.DoctorStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 public class DoctorRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(DoctorRepository.class);
+
 
     private final EventRepository er;
 
@@ -37,8 +45,27 @@ public class DoctorRepository {
 
     public Doctor setDoctorStatus(String name, DoctorStatus status){
         Doctor doctor = doctors.get(name);
-        doctor.setStatus(status);
+        synchronized(doctor) {
+            if (doctor.getStatus() == DoctorStatus.DOCTOR_STATUS_UNAVAILABLE && status == DoctorStatus.DOCTOR_STATUS_ATTENDING) {
+                throw new DoctorIsAttendingException(name);
+            }
+            doctor.setStatus(status);
+            logger.info("Doctor {} changed status to {}", name, status);
+        }
 
+        er.notifyDisponibility(doctor);
+        return doctor;
+    }
+
+    public Doctor setDoctorStatusAvailability(String name, DoctorStatus status){
+        Doctor doctor = doctors.get(name);
+        synchronized(doctor) {
+            if (doctor.getStatus() == DoctorStatus.DOCTOR_STATUS_ATTENDING) {
+                throw new DoctorIsAttendingException(name);
+            }
+            doctor.setStatus(status);
+            logger.info("Doctor {} changed status to {}", name, status);
+        }
         er.notifyDisponibility(doctor);
         return doctor;
     }
@@ -60,6 +87,5 @@ public class DoctorRepository {
 
         return candidate;
     }
-
 
 }
