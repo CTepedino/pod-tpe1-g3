@@ -22,8 +22,14 @@ public class emergencyCareClient {
             return;
         }
 
-        ManagedChannel channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
-        blockingStub = EmergencyRoomServiceGrpc.newBlockingStub(channel);
+        ManagedChannel channel = null;
+        try {
+            channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
+            blockingStub = EmergencyRoomServiceGrpc.newBlockingStub(channel);
+        } catch (Exception e) {
+            System.out.println("Failed to connect to the server at " + address + ". Please check the server address and try again.");
+            return;
+        }
 
         switch(action){
             case "carePatient":

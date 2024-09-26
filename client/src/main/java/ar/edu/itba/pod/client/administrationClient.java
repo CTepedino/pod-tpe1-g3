@@ -26,8 +26,14 @@ public class administrationClient {
             return;
         }
 
-        ManagedChannel channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
-        blockingStub = AdministrationServiceGrpc.newBlockingStub(channel);
+        ManagedChannel channel = null;
+        try {
+            channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
+            blockingStub = AdministrationServiceGrpc.newBlockingStub(channel);
+        } catch (Exception e) {
+            System.out.println("Failed to connect to the server at " + address + ". Please check the server address and try again.");
+            return;
+        }
 
         switch(action){
             case "addRoom":

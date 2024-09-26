@@ -1,11 +1,13 @@
 package ar.edu.itba.pod.client;
 
+import ar.edu.itba.pod.grpc.emergencyCare.EmergencyRoomServiceGrpc;
 import ar.edu.itba.pod.grpc.query.*;
 import emergencyRoom.Messages;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -33,10 +35,22 @@ public class queryClient {
             System.out.println("No output path specified");
             return;
         }
-        outPath = Paths.get(pathString);
 
-        ManagedChannel channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
-        blockingStub = QueryServiceGrpc.newBlockingStub(channel);
+        try {
+            outPath = Paths.get(pathString);
+        } catch (InvalidPathException e) {
+            System.out.println("The provided path \"" + pathString + "\" is invalid. Please check the path format and try again.");
+            return;
+        }
+
+        ManagedChannel channel = null;
+        try {
+            channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
+            blockingStub = QueryServiceGrpc.newBlockingStub(channel);
+        } catch (Exception e) {
+            System.out.println("Failed to connect to the server at " + address + ". Please check the server address and try again.");
+            return;
+        }
 
         switch(action){
             case "queryRooms":
