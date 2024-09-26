@@ -62,21 +62,15 @@ public class AdministrationServiceTest {
         } catch (DoctorIsAttendingException ignored){}
     };
 
-    private final Runnable setDoctorAvailableAfterAttending = () -> {
+    private final Runnable setDoctorAvailable = () -> {
         try{
             doctorRepository.setDoctorStatus(NAME, DoctorStatus.DOCTOR_STATUS_AVAILABLE);
         } catch (DoctorIsAttendingException ignored){}
     };
 
-    private final Runnable setDoctorAvailable = () -> {
-        try{
-            doctorRepository.setDoctorStatusAvailability(NAME, DoctorStatus.DOCTOR_STATUS_AVAILABLE);
-        } catch (DoctorIsAttendingException ignored){}
-    };
-
     private final Runnable setDoctorUnavailable = () -> {
         try{
-            doctorRepository.setDoctorStatusAvailability(NAME, DoctorStatus.DOCTOR_STATUS_UNAVAILABLE);
+            doctorRepository.setDoctorStatus(NAME, DoctorStatus.DOCTOR_STATUS_UNAVAILABLE);
         } catch (DoctorIsAttendingException ignored){}
     };
 
@@ -102,14 +96,11 @@ public class AdministrationServiceTest {
         ExecutorService pool = Executors.newCachedThreadPool();
 
         for(int i=0; i<THREAD_COUNT; i++){
-            if(i%4 == 0){
-                pool.submit(setDoctorUnavailable);
-            }
-            else if(i%4 == 1){
+            if(i == THREAD_COUNT-1){
                 pool.submit(setDoctorAttending);
             }
-            else if(i%4 == 2){
-                pool.submit(setDoctorAvailableAfterAttending);
+            else if(i%2 == 1){
+                pool.submit(setDoctorUnavailable);
             }
             else{
                 pool.submit(setDoctorAvailable);

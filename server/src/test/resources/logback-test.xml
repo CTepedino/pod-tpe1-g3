@@ -6,9 +6,7 @@
         </encoder>
     </appender>
 
-    <logger name="ar.edu.itba.pod.server.repository" level="DEBUG">
-        <appender-ref ref="STDOUT"/>
-    </logger>
+    <logger name="ar.edu.itba.pod." level="DEBUG"/> <!-- Cambia esto al paquete correspondiente -->
 
     <root level="DEBUG">
         <appender-ref ref="STDOUT"/>

@@ -42,7 +42,7 @@ public class AdministrationService extends AdministrationServiceGrpc.Administrat
 
     @Override
     public void setDoctor(DoctorStatusRequest request, StreamObserver<DoctorStatusResponse> responseObserver) {
-       Doctor doctor = dr.setDoctorStatusAvailability(request.getName(), request.getStatus());
+       Doctor doctor = dr.setDoctorStatus(request.getName(), request.getStatus());
 
         responseObserver.onNext(doctor.toDoctorStatusResponse());
         responseObserver.onCompleted();

@@ -16,9 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DoctorRepository {
 
-    private static final Logger logger = LoggerFactory.getLogger(DoctorRepository.class);
-
-
     private final EventRepository er;
 
     private final Map<String, Doctor> doctors;
@@ -45,30 +42,11 @@ public class DoctorRepository {
 
     public Doctor setDoctorStatus(String name, DoctorStatus status){
         Doctor doctor = doctors.get(name);
-        synchronized(doctor) {
-            if (doctor.getStatus() == DoctorStatus.DOCTOR_STATUS_UNAVAILABLE && status == DoctorStatus.DOCTOR_STATUS_ATTENDING) {
-                throw new DoctorIsAttendingException(name);
-            }
-            doctor.setStatus(status);
-            logger.info("Doctor {} changed status to {}", name, status);
-        }
-
+        doctor.setStatus(status);
         er.notifyDisponibility(doctor);
         return doctor;
     }
 
-    public Doctor setDoctorStatusAvailability(String name, DoctorStatus status){
-        Doctor doctor = doctors.get(name);
-        synchronized(doctor) {
-            if (doctor.getStatus() == DoctorStatus.DOCTOR_STATUS_ATTENDING) {
-                throw new DoctorIsAttendingException(name);
-            }
-            doctor.setStatus(status);
-            logger.info("Doctor {} changed status to {}", name, status);
-        }
-        er.notifyDisponibility(doctor);
-        return doctor;
-    }
 
     Doctor getDoctorForCare(int level){
         Doctor candidate = null;
