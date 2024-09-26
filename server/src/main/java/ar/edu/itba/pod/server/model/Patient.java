@@ -3,10 +3,15 @@ package ar.edu.itba.pod.server.model;
 
 import emergencyRoom.Messages;
 
-public class Patient extends Person implements Comparable<Person>{
+import java.time.LocalDateTime;
+
+public class Patient extends Person implements Comparable<Patient>{
+
+    private final LocalDateTime arrivalTime;
 
     public Patient(String name, int level){
         super(name, level);
+        arrivalTime = LocalDateTime.now();
     }
 
     @Override
@@ -24,9 +29,9 @@ public class Patient extends Person implements Comparable<Person>{
     }
 
     @Override
-    public int compareTo(Person o) {
+    public int compareTo(Patient o) {
         if (level == o.level){
-            return name.compareTo(o.name);
+            return arrivalTime.compareTo(o.arrivalTime);
         }
         return level > o.level? 1: -1;
     }
