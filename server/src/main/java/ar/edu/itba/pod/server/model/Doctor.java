@@ -18,13 +18,17 @@ public class Doctor extends Person{
     }
 
     public synchronized void setStatus(DoctorStatus status){
+        if (this.status == DoctorStatus.DOCTOR_STATUS_ATTENDING){
+            throw new DoctorIsAttendingException(name);
+        }
         this.status = status;
     }
 
+    public void endCare(){
+        status = DoctorStatus.DOCTOR_STATUS_AVAILABLE;
+    }
+
     public synchronized DoctorStatus getStatus(){
-        if (status == DoctorStatus.DOCTOR_STATUS_ATTENDING){
-            throw new DoctorIsAttendingException(name);
-        }
         return status;
     }
 

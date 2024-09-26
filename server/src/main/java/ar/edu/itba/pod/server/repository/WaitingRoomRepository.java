@@ -16,6 +16,7 @@ import emergencyRoom.Messages;
 
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WaitingRoomRepository {
 
@@ -46,7 +47,11 @@ public class WaitingRoomRepository {
                 throw new PatientAlreadyExistsException(name);
             }
         }
-        //TODO: revisar que no este siendo atendido en ninguna sala
+
+        if (rr.hasPatient(patient)){
+            throw new PatientAlreadyExistsException(name);
+        }
+
         patients.add(patient);
     }
 
@@ -166,7 +171,7 @@ public class WaitingRoomRepository {
         }
 
         List<Messages.PatientInfo> info = new ArrayList<>();
-        for (Patient p: patients){
+        for (Patient p: patients.stream().sorted().toList()){
             info.add(p.toPatientInfo());
         }
         return info;
