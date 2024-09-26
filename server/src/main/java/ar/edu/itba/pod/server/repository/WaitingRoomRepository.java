@@ -207,6 +207,9 @@ public class WaitingRoomRepository {
                 info.add(entry.toCaredInfo());
             }
         }
+        if (info.isEmpty()){
+            throw new NoDischargedPatientsException(room);
+        }
         return info;
     }
 
