@@ -54,7 +54,13 @@ public class waitingRoomClient {
             return;
         }
 
-        int level = Integer.parseInt(levelString);
+        int level;
+        try {
+            level = Integer.parseInt(levelString);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid level. Please provide a valid integer for the level.");
+            return;
+        }
         Messages.PatientInfo patient = Messages.PatientInfo.newBuilder().setName(patientName).setLevel(level).build();
 
         try {
@@ -77,7 +83,13 @@ public class waitingRoomClient {
             return;
         }
 
-        int level = Integer.parseInt(levelString);
+        int level;
+        try {
+            level = Integer.parseInt(levelString);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid level. Please provide a valid integer for the level.");
+            return;
+        }
         Messages.PatientInfo patient = Messages.PatientInfo.newBuilder().setName(patientName).setLevel(level).build();
 
         try {

@@ -55,7 +55,13 @@ public class emergencyCareClient {
             return;
         }
 
-        int room = Integer.parseInt(roomString);
+        int room;
+        try {
+            room = Integer.parseInt(roomString);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid room number. Please provide a valid integer for the room number.");
+            return;
+        }
 
         try {
             CarePatientResponse response = blockingStub.carePatient(UInt32Value.of(room));
@@ -93,7 +99,13 @@ public class emergencyCareClient {
             return;
         }
 
-        int room = Integer.parseInt(roomString);
+        int room;
+        try {
+            room = Integer.parseInt(roomString);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid room number. Please provide a valid integer for the room number.");
+            return;
+        }
         DischargePatientRequest request = DischargePatientRequest.newBuilder().setRoom(room).setDoctorName(doctorName).setPatientName(patientName).build();
 
         try {

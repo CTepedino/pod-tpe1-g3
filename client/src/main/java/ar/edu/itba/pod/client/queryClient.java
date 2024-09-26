@@ -86,12 +86,19 @@ public class queryClient {
     }
 
     private static void queryCares(){
-        String room = System.getProperty("room");
+        String roomString = System.getProperty("room");
         QueryCaresRequest request;
-        if(room == null){
+        if(roomString == null){
             request = QueryCaresRequest.newBuilder().build();
         } else {
-            request = QueryCaresRequest.newBuilder().setRoom(Integer.parseInt(room)).build();
+            int room;
+            try {
+                room = Integer.parseInt(roomString);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid room number. Please provide a valid integer for the room number.");
+                return;
+            }
+            request = QueryCaresRequest.newBuilder().setRoom(room).build();
         }
         try {
             QueryCaresResponse response = blockingStub.queryCares(request);

@@ -68,7 +68,13 @@ public class administrationClient {
             return;
         }
 
-        int level = Integer.parseInt(levelString);
+        int level;
+        try {
+            level = Integer.parseInt(levelString);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid level. Please provide a valid integer for the level.");
+            return;
+        }
         Messages.DoctorInfo doctorInfo = Messages.DoctorInfo.newBuilder().setName(doctor).setMaxLevel(level).build();
 
         try {
