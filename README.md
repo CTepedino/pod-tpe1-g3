@@ -14,7 +14,15 @@ Para compilar el proyecto, se deben ejecutar el siguientes comando desde la carp
 mvn clean install
 ```
 
-Esto generara los directorios "target" en client y en server, y dentro se encontrara el archivo "tpe1-g3-{directorio}-2024.2Q-bin.tar.gz". Dentro, se encuentran los scripts necesarios para correr los clientes y el servidor respectivamente.
+Esto generara los directorios "target" en client y en server, y dentro se encontrara el archivo "tpe1-g3-{directorio}-2024.2Q-bin.tar.gz". 
+
+Descomprimir:
+
+```bash
+tar -xvzf tpe1-g3-{directorio}-2024.2Q-bin.tar.gz  
+```
+
+Dentro, se encuentran los scripts necesarios para correr los clientes y el servidor respectivamente.
 
 ## Uso
 
