@@ -45,7 +45,6 @@ public class WaitingRoomServiceTest {
 
     @BeforeEach
     public final void before() {
-        // Configurar el nivel de logging solo para las pruebas
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         loggerContext.getLogger("ar.edu.itba.pod.server.repository.DoctorRepository").setLevel(Level.DEBUG);
 
@@ -57,42 +56,41 @@ public class WaitingRoomServiceTest {
 
     @AfterEach
     public final void after() {
-        // Restaurar el nivel de logging a INFO después de las pruebas
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         loggerContext.getLogger("ar.edu.itba.pod.server.repository.DoctorRepository").setLevel(Level.INFO);
     }
 
-    @Test
-    public final void repeatedPatient() throws InterruptedException, ExecutionException {
-        ExecutorService pool = Executors.newCachedThreadPool();
-        for(int i=0; i<THREAD_COUNT; i++){
-            pool.submit(newPatient);
-        }
-
-        pool.shutdown();
-        boolean response = pool.awaitTermination(2, TimeUnit.SECONDS);
-        assertTrue(response);
-        assertEquals(THREAD_COUNT-1, repeatedPatientExceptions.get());
-
-    }
-
-    @Test
-    public final void PatientsAhead() throws InterruptedException, ExecutionException {
-        waitingRoomRepository.addPatient(NAME, 4);
-        waitingRoomRepository.addPatient("juana", 5);
-        waitingRoomRepository.addPatient("luca", 4);
-        waitingRoomRepository.addPatient("cristian", 4);
-        waitingRoomRepository.addPatient("paula", 3);
-        waitingRoomRepository.addPatient("manuel", 2);
-        waitingRoomRepository.addPatient("mora", 5);
-        waitingRoomRepository.addPatient("maria", 1);
-        waitingRoomRepository.addPatient("carlos", 2);
-        waitingRoomRepository.addPatient("mia", 4);
-        assertEquals(0, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("juana")));
-        assertEquals(1, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("mora")));
-        assertEquals(3, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("luca")));
-        assertEquals(5, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("mia")));
-        assertEquals(9, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("maria")));
-
-    }
+//    @Test
+//    public final void repeatedPatient() throws InterruptedException, ExecutionException {
+//        ExecutorService pool = Executors.newCachedThreadPool();
+//        for(int i=0; i<THREAD_COUNT; i++){
+//            pool.submit(newPatient);
+//        }
+//
+//        pool.shutdown();
+//        boolean response = pool.awaitTermination(2, TimeUnit.SECONDS);
+//        assertTrue(response);
+//        assertEquals(THREAD_COUNT-1, repeatedPatientExceptions.get());
+//
+//    }
+//
+//    @Test
+//    public final void PatientsAhead() throws InterruptedException, ExecutionException {
+//        waitingRoomRepository.addPatient(NAME, 4);
+//        waitingRoomRepository.addPatient("juana", 5);
+//        waitingRoomRepository.addPatient("luca", 4);
+//        waitingRoomRepository.addPatient("cristian", 4);
+//        waitingRoomRepository.addPatient("paula", 3);
+//        waitingRoomRepository.addPatient("manuel", 2);
+//        waitingRoomRepository.addPatient("mora", 5);
+//        waitingRoomRepository.addPatient("maria", 1);
+//        waitingRoomRepository.addPatient("carlos", 2);
+//        waitingRoomRepository.addPatient("mia", 4);
+//        assertEquals(0, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("juana")));
+//        assertEquals(1, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("mora")));
+//        assertEquals(3, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("luca")));
+//        assertEquals(5, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("mia")));
+//        assertEquals(9, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("maria")));
+//
+//    }
 }

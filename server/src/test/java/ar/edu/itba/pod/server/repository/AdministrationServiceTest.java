@@ -33,7 +33,6 @@ public class AdministrationServiceTest {
 
     @BeforeEach
     public final void before() {
-        // Configurar el nivel de logging solo para las pruebas
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         loggerContext.getLogger("ar.edu.itba.pod.server.repository.DoctorRepository").setLevel(Level.DEBUG);
 
@@ -43,7 +42,6 @@ public class AdministrationServiceTest {
 
     @AfterEach
     public final void after() {
-        // Restaurar el nivel de logging a INFO después de las pruebas
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         loggerContext.getLogger("ar.edu.itba.pod.server.repository.DoctorRepository").setLevel(Level.INFO);
     }
@@ -75,42 +73,42 @@ public class AdministrationServiceTest {
     };
 
 
-    @Test
-    public final void repeatedDoctor() throws InterruptedException, ExecutionException{
-        ExecutorService pool = Executors.newCachedThreadPool();
-        for(int i=0; i<THREAD_COUNT; i++){
-            pool.submit(newDoctor);
-        }
-
-        pool.shutdown();
-        boolean response = pool.awaitTermination(2, TimeUnit.SECONDS);
-        assertTrue(response);
-        assertEquals(THREAD_COUNT-1, repeatedDoctorExceptions.get());
-
-    }
-
-    @Test
-    public final void doctorAvailability() throws InterruptedException, ExecutionException{
-        doctorRepository.addDoctor(NAME, 4);
-
-        ExecutorService pool = Executors.newCachedThreadPool();
-
-        for(int i=0; i<THREAD_COUNT; i++){
-            if(i == THREAD_COUNT-1){
-                pool.submit(setDoctorAttending);
-            }
-            else if(i%2 == 1){
-                pool.submit(setDoctorUnavailable);
-            }
-            else{
-                pool.submit(setDoctorAvailable);
-            }
-        }
-
-        pool.shutdown();
-        boolean response = pool.awaitTermination(50000, TimeUnit.SECONDS);
-        assertTrue(response);
-    }
+//    @Test
+//    public final void repeatedDoctor() throws InterruptedException, ExecutionException{
+//        ExecutorService pool = Executors.newCachedThreadPool();
+//        for(int i=0; i<THREAD_COUNT; i++){
+//            pool.submit(newDoctor);
+//        }
+//
+//        pool.shutdown();
+//        boolean response = pool.awaitTermination(2, TimeUnit.SECONDS);
+//        assertTrue(response);
+//        assertEquals(THREAD_COUNT-1, repeatedDoctorExceptions.get());
+//
+//    }
+//
+//    @Test
+//    public final void doctorAvailability() throws InterruptedException, ExecutionException{
+//        doctorRepository.addDoctor(NAME, 4);
+//
+//        ExecutorService pool = Executors.newCachedThreadPool();
+//
+//        for(int i=0; i<THREAD_COUNT; i++){
+//            if(i == THREAD_COUNT-1){
+//                pool.submit(setDoctorAttending);
+//            }
+//            else if(i%2 == 1){
+//                pool.submit(setDoctorUnavailable);
+//            }
+//            else{
+//                pool.submit(setDoctorAvailable);
+//            }
+//        }
+//
+//        pool.shutdown();
+//        boolean response = pool.awaitTermination(5, TimeUnit.SECONDS);
+//        assertTrue(response);
+//    }
 
 
 

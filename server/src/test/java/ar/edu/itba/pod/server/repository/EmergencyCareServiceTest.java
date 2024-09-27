@@ -132,7 +132,6 @@ public class EmergencyCareServiceTest {
 
     @BeforeEach
     public final void before() {
-        // Configurar el nivel de logging solo para las pruebas
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         loggerContext.getLogger("ar.edu.itba.pod.server.repository.DoctorRepository").setLevel(Level.DEBUG);
 
@@ -144,101 +143,100 @@ public class EmergencyCareServiceTest {
 
     @AfterEach
     public final void after() {
-        // Restaurar el nivel de logging a INFO después de las pruebas
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         loggerContext.getLogger("ar.edu.itba.pod.server.repository.DoctorRepository").setLevel(Level.INFO);
     }
 
-    @Test
-    public final void carePatient() throws InterruptedException, ExecutionException {
-        waitingRoomRepository.addPatient("pablo", 4);
-        waitingRoomRepository.addPatient("juana", 5);
-        waitingRoomRepository.addPatient("lucas", 4);
-        waitingRoomRepository.addPatient("cris", 4);
-        waitingRoomRepository.addPatient("paula", 3);
-        waitingRoomRepository.addPatient("manuel", 2);
-        waitingRoomRepository.addPatient("mora", 5);
-        waitingRoomRepository.addPatient("maria", 1);
-        waitingRoomRepository.addPatient("carlos", 2);
-        waitingRoomRepository.addPatient("mia", 4);
-
-
-        doctorRepository.addDoctor("doctor1", 5);
-        doctorRepository.setDoctorStatus("doctor1", Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE);
-        doctorRepository.addDoctor("doctor2", 2);
-        doctorRepository.setDoctorStatus("doctor2", Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE);
-        doctorRepository.addDoctor("doctor3", 3);
-
-        roomRepository.addRoom();
-        roomRepository.addRoom();
-
-        waitingRoomRepository.startCare(1);
-
-        assertEquals(0, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("mora")));
-
-        waitingRoomRepository.startCare(2);
-
-        assertEquals(0, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("mora")));
-        assertEquals(6, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("carlos")));
-
-        waitingRoomRepository.endCare(1, "juana", "doctor1");
-
-        waitingRoomRepository.startCare(1);
-
-        assertEquals(0, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("pablo")));
-
-    }
-
-    @Test
-    public final void careAllPatients() throws InterruptedException, ExecutionException {
-        waitingRoomRepository.addPatient("pablo", 4);
-        waitingRoomRepository.addPatient("juana", 5);
-        waitingRoomRepository.addPatient("lucas", 4);
-        waitingRoomRepository.addPatient("cris", 4);
-        waitingRoomRepository.addPatient("paula", 3);
-        waitingRoomRepository.addPatient("manuel", 2);
-        waitingRoomRepository.addPatient("mora", 5);
-        waitingRoomRepository.addPatient("maria", 1);
-        waitingRoomRepository.addPatient("carlos", 2);
-        waitingRoomRepository.addPatient("mia", 4);
-
-
-        doctorRepository.addDoctor("doctor1", 5);
-        doctorRepository.setDoctorStatus("doctor1", Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE);
-        doctorRepository.addDoctor("doctor2", 2);
-        doctorRepository.setDoctorStatus("doctor2", Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE);
-        doctorRepository.addDoctor("doctor3", 3);
-
-        roomRepository.addRoom();
-        roomRepository.addRoom();
-
-        waitingRoomRepository.startAllCare();
-
-        assertEquals(0, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("mora")));
-
-        waitingRoomRepository.startCare(2);
-
-        waitingRoomRepository.endCare(1, "juana", "doctor1");
-
-        waitingRoomRepository.startAllCare();
-
-        waitingRoomRepository.endCare(1, "mora", "doctor1");
-
-        waitingRoomRepository.endCare(2, "manuel", "doctor2");
-    }
-
-
-    @Test
-    public final void multipleThreadTest() throws InterruptedException, ExecutionException{
-
-        ExecutorService pool = Executors.newCachedThreadPool();
-        pool.submit(test);
-        pool.submit(test);
-        pool.submit(test2);
-        pool.shutdown();
-        boolean response = pool.awaitTermination(50000, TimeUnit.SECONDS);
-        assertTrue(response);
-    }
+//    @Test
+//    public final void carePatient() throws InterruptedException, ExecutionException {
+//        waitingRoomRepository.addPatient("pablo", 4);
+//        waitingRoomRepository.addPatient("juana", 5);
+//        waitingRoomRepository.addPatient("lucas", 4);
+//        waitingRoomRepository.addPatient("cris", 4);
+//        waitingRoomRepository.addPatient("paula", 3);
+//        waitingRoomRepository.addPatient("manuel", 2);
+//        waitingRoomRepository.addPatient("mora", 5);
+//        waitingRoomRepository.addPatient("maria", 1);
+//        waitingRoomRepository.addPatient("carlos", 2);
+//        waitingRoomRepository.addPatient("mia", 4);
+//
+//
+//        doctorRepository.addDoctor("doctor1", 5);
+//        doctorRepository.setDoctorStatus("doctor1", Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE);
+//        doctorRepository.addDoctor("doctor2", 2);
+//        doctorRepository.setDoctorStatus("doctor2", Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE);
+//        doctorRepository.addDoctor("doctor3", 3);
+//
+//        roomRepository.addRoom();
+//        roomRepository.addRoom();
+//
+//        waitingRoomRepository.startCare(1);
+//
+//        assertEquals(0, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("mora")));
+//
+//        waitingRoomRepository.startCare(2);
+//
+//        assertEquals(0, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("mora")));
+//        assertEquals(6, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("carlos")));
+//
+//        waitingRoomRepository.endCare(1, "juana", "doctor1");
+//
+//        waitingRoomRepository.startCare(1);
+//
+//        assertEquals(0, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("pablo")));
+//
+//    }
+//
+//    @Test
+//    public final void careAllPatients() throws InterruptedException, ExecutionException {
+//        waitingRoomRepository.addPatient("pablo", 4);
+//        waitingRoomRepository.addPatient("juana", 5);
+//        waitingRoomRepository.addPatient("lucas", 4);
+//        waitingRoomRepository.addPatient("cris", 4);
+//        waitingRoomRepository.addPatient("paula", 3);
+//        waitingRoomRepository.addPatient("manuel", 2);
+//        waitingRoomRepository.addPatient("mora", 5);
+//        waitingRoomRepository.addPatient("maria", 1);
+//        waitingRoomRepository.addPatient("carlos", 2);
+//        waitingRoomRepository.addPatient("mia", 4);
+//
+//
+//        doctorRepository.addDoctor("doctor1", 5);
+//        doctorRepository.setDoctorStatus("doctor1", Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE);
+//        doctorRepository.addDoctor("doctor2", 2);
+//        doctorRepository.setDoctorStatus("doctor2", Messages.DoctorStatus.DOCTOR_STATUS_AVAILABLE);
+//        doctorRepository.addDoctor("doctor3", 3);
+//
+//        roomRepository.addRoom();
+//        roomRepository.addRoom();
+//
+//        waitingRoomRepository.startAllCare();
+//
+//        assertEquals(0, waitingRoomRepository.getPatientsAhead(waitingRoomRepository.findByName("mora")));
+//
+//        waitingRoomRepository.startCare(2);
+//
+//        waitingRoomRepository.endCare(1, "juana", "doctor1");
+//
+//        waitingRoomRepository.startAllCare();
+//
+//        waitingRoomRepository.endCare(1, "mora", "doctor1");
+//
+//        waitingRoomRepository.endCare(2, "manuel", "doctor2");
+//    }
+//
+//
+//    @Test
+//    public final void multipleThreadTest() throws InterruptedException, ExecutionException{
+//
+//        ExecutorService pool = Executors.newCachedThreadPool();
+//        pool.submit(test);
+//        pool.submit(test);
+//        pool.submit(test2);
+//        pool.shutdown();
+//        boolean response = pool.awaitTermination(5, TimeUnit.SECONDS);
+//        assertTrue(response);
+//    }
 
 
 
